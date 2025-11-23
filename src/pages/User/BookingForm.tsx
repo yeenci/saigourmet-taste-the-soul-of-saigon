@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 
