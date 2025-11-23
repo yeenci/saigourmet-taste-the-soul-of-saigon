@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react';
+import React from 'react';
 
 const CreateRestaurant: React.FC = () => {
     // Add state for all fields

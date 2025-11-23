@@ -4,11 +4,12 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import AboutSection from '../components/AboutSection';
 import { Link } from 'react-router-dom';
-import type { Article, Restaurant } from '../types';
+import type { Article } from '../types';
 
 const Home: React.FC = () => {
-    const [articles, setArticles] = useState<Article[]>([]);
-    const [topRestaurants, setTopRestaurants] = useState<Restaurant[]>([]);
+    // const [articles, setArticles] = useState<Article[]>([]);
+    // const [topRestaurants, setTopRestaurants] = useState<Restaurant[]>([]);
+    const [articles] = useState<Article[]>([]);
 
     useEffect(() => {
         // Mock data fetching
