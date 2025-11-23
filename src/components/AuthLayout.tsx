@@ -14,7 +14,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ title, subtitle, children }) =>
             <div className="auth-image-side">
                 <div className="auth-overlay"></div>
                 <div className="auth-quote">
-                    <h1 className="font-playfair">VinaTable</h1>
+                    <h1 className="font-playfair">SaiGourmet</h1>
                     <p className="lead fs-4">Reserve the best tables in town.<br/>Seamless. Fast. Delicious.</p>
                 </div>
             </div>

@@ -163,7 +163,7 @@ const Home: React.FC = () => {
       >
         <div className="container text-center">
           <h2 className="fw-bold display-4 mb-4 font-playfair">
-            Partner with VinaTable
+            Partner with SaiGourmet
           </h2>
           <p className="lead mb-5 fs-4 opacity-90">
             Fill your seats and manage bookings effortlessly with our restaurant solutions.

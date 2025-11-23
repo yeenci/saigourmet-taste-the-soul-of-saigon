@@ -128,7 +128,7 @@ const ArticleDetail: React.FC = () => {
           </span>
           <h1 className="display-4 text-white fw-bold">{article.title}</h1>
           <div className="text-white opacity-75 mt-2">
-            <i className="fa fa-user me-2"></i> By DineSaigon Team &bull;{" "}
+            <i className="fa fa-user me-2"></i> By SaiGourmet Team &bull;{" "}
             <i className="fa fa-calendar ms-2 me-2"></i> Nov 24, 2025
           </div>
         </div>

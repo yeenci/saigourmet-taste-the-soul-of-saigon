@@ -7,7 +7,7 @@ const AboutSection: React.FC = () => {
                 <div className="col-md-6">
                     <h1 style={{ color: '#b2744c', fontFamily: 'Playfair Display' }}>Discover Saigon's Food</h1>
                     <p className="fst-italic">
-                        Welcome to <strong>DineSaigon</strong>, your ultimate guide to exploring vibrant cafes.
+                        Welcome to <strong>SaiGourmet</strong>, your ultimate guide to exploring vibrant cafes.
                     </p>
                     <ul className="list-unstyled">
                         <li>✅ Explore rich varieties of cafes.</li>

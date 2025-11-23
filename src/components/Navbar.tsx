@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
           <span
             style={{ fontSize: "1.6rem", fontFamily: "Playfair Display, serif", letterSpacing: "1px" }}
           >
-            VinaTable
+            SaiGourmet
           </span>
         </Link>
 

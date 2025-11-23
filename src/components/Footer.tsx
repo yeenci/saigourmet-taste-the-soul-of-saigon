@@ -6,8 +6,8 @@ const Footer: React.FC = () => {
         <footer className="pt-5 pb-4 text-center text-white" style={{ backgroundColor: '#1f2029', borderTop: '5px solid #b2744c' }}>
             <div className="container">
                 <div className="mb-4">
-                    <img src="/assets/logo.png" alt="VinaTable Logo" width="70" className="mb-2" />
-                    <h3 className="fw-bold font-playfair mb-1">VinaTable</h3>
+                    <img src="/assets/logo.png" alt="SaiGourmet Logo" width="70" className="mb-2" />
+                    <h3 className="fw-bold font-playfair mb-1">SaiGourmet</h3>
                     {/* Changed text color for better visibility */}
                     <p className="text-light opacity-75 small">Your gateway to the best dining experiences in Saigon.</p>
                 </div>
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
                 <div className="border-top border-secondary pt-4 mt-4">
                     {/* Improved contrast for copyright text */}
                     <p className="small text-light mb-0 opacity-75">
-                        &copy; {new Date().getFullYear()} <strong>VinaTable</strong>. All Rights Reserved.
+                        &copy; {new Date().getFullYear()} <strong>SaiGourmet</strong>. All Rights Reserved.
                     </p>
                 </div>
             </div>
