@@ -1,0 +1,71 @@
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@500&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  color: #fff;
+  background-color: #b2744c; /* Default bg color from login/forms */
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Navbar overrides */
+.navbar {
+  background: #b2744c;
+}
+.navbar-brand, .nav-link {
+  color: white !important;
+}
+
+/* Card 3D Wrap (Used in Login, Register, etc.) */
+.card-3d-wrap {
+  position: relative;
+  width: 440px;
+  max-width: 100%;
+  margin: 40px auto;
+}
+.card-front {
+  width: 100%;
+  background-color: #2a2b38;
+  border-radius: 10px;
+  padding: 30px;
+  color: white;
+}
+
+/* Form Styles */
+.form-style {
+  padding: 13px 20px;
+  height: 48px;
+  width: 100%;
+  font-weight: 500;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #c4c3ca;
+  background-color: #1f2029;
+  border: none;
+  margin-bottom: 10px;
+}
+.btn-custom {
+    background-color: #b2744c;
+    color: #fff;
+    height: 48px;
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+.btn-custom:hover {
+    background-color: #fff;
+    color: #b2744c;
+}
+
+/* Specific Section Overrides for Home Page white areas */
+.section-white {
+    background-color: #fff;
+    color: #333;
+    padding: 50px 0;
+}
