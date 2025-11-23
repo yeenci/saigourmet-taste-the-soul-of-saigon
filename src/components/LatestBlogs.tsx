@@ -7,7 +7,7 @@ const LatestBlogs: React.FC = () => {
     const [articles, setArticles] = useState<Article[]>([]);
 
     useEffect(() => {
-        // Mock Data - In real app: fetch('/api/articles')
+        // Mock Data matching your structure
         const mockArticles: Article[] = [
             {
                 articleId: 101,
@@ -32,37 +32,40 @@ const LatestBlogs: React.FC = () => {
     }, []);
 
     return (
-        <div className="container">
-            <div className="row g-4">
-                {articles.map((article) => (
-                    <div className="col-md-4" key={article.articleId}>
-                        <div className="card h-100 shadow-sm border-0">
-                            <img 
-                                src={article.image} 
-                                className="card-img-top" 
-                                alt={article.title}
-                                style={{ height: '200px', objectFit: 'cover' }}
-                            />
-                            <div className="card-body d-flex flex-column">
-                                <h4 className="card-title fw-bold" style={{fontSize: '1.25rem'}}>{article.title}</h4>
-                                <p className="card-text text-muted flex-grow-1">
-                                    {article.content.substring(0, 100)}...
-                                </p>
-                                <div className="mt-3">
-                                    <button 
-                                        className="btn btn-outline-dark rounded-pill px-4"
-                                        onClick={() => alert('Navigate to article: ' + article.articleId)}
-                                    >
-                                        Read More
-                                    </button>
-                                </div>
+        <div className="row g-4">
+            {articles.map((article) => (
+                <div className="col-md-4" key={article.articleId}>
+                    <div className="card h-100 shadow-sm border-0 hover-scale">
+                        <img 
+                            src={article.image} 
+                            className="card-img-top" 
+                            alt={article.title}
+                            style={{ height: '200px', objectFit: 'cover' }}
+                        />
+                        <div className="card-body d-flex flex-column p-4">
+                            <h5 className="card-title fw-bold mb-3 font-playfair">{article.title}</h5>
+                            <p className="card-text text-muted flex-grow-1 small">
+                                {article.content.substring(0, 100)}...
+                            </p>
+                            <div className="mt-3">
+                                {/* LINK TO ARTICLE DETAIL PAGE */}
+                                <Link 
+                                    to={`/article/${article.articleId}`}
+                                    className="btn btn-outline-dark rounded-pill px-4 w-100"
+                                >
+                                    Read More
+                                </Link>
                             </div>
                         </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            ))}
+            
             <div className="text-center mt-5">
-                <Link to="/blogs" className="btn btn-custom px-5">See All Blogs</Link>
+                {/* LINK TO ALL BLOGS PAGE */}
+                <Link to="/blogs" className="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow" style={{backgroundColor: '#b2744c', borderColor: '#b2744c'}}>
+                    See All Stories <i className="fa fa-arrow-right ms-2"></i>
+                </Link>
             </div>
         </div>
     );

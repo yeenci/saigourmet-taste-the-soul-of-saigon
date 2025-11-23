@@ -1,18 +1,42 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
     return (
-        <footer className="py-4 text-center" style={{ backgroundColor: '#b2744c', color: 'white' }}>
-            <div className="mb-3">
-                <img src="/assets/logo.png" alt="Logo" width="50" />
-            </div>
-            <div className="social-links mb-3">
-                <a href="#" className="text-white mx-2"><i className="fa fa-facebook"></i></a>
-                <a href="#" className="text-white mx-2"><i className="fa fa-instagram"></i></a>
-                <a href="#" className="text-white mx-2"><i className="fa fa-youtube"></i></a>
-            </div>
-            <div className="copyright">
-                &copy; Copyright <strong><span>Loving Food</span></strong>. All Rights Reserved
+        <footer className="pt-5 pb-4 text-center text-white" style={{ backgroundColor: '#1f2029', borderTop: '5px solid #b2744c' }}>
+            <div className="container">
+                <div className="mb-4">
+                    <img src="/assets/logo.png" alt="VinaTable Logo" width="70" className="mb-2" />
+                    <h3 className="fw-bold font-playfair mb-1">VinaTable</h3>
+                    {/* Changed text color for better visibility */}
+                    <p className="text-light opacity-75 small">Your gateway to the best dining experiences in Saigon.</p>
+                </div>
+                
+                <div className="social-links mb-4 d-flex justify-content-center gap-3">
+                    <a href="#" className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center hover-scale" style={{width: '45px', height: '45px'}}>
+                        <i className="fa fa-facebook fs-5"></i>
+                    </a>
+                    <a href="#" className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center hover-scale" style={{width: '45px', height: '45px'}}>
+                        <i className="fa fa-instagram fs-5"></i>
+                    </a>
+                    <a href="#" className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center hover-scale" style={{width: '45px', height: '45px'}}>
+                        <i className="fa fa-youtube fs-5"></i>
+                    </a>
+                </div>
+
+                <div className="row justify-content-center mb-4 g-3">
+                    <div className="col-auto"><Link to="/" className="text-light text-decoration-none px-3 hover-opacity">Home</Link></div>
+                    <div className="col-auto"><Link to="/blogs" className="text-light text-decoration-none px-3 hover-opacity">Blogs</Link></div>
+                    <div className="col-auto"><Link to="/register" className="text-light text-decoration-none px-3 hover-opacity">Join Us</Link></div>
+                    <div className="col-auto"><Link to="/contact" className="text-light text-decoration-none px-3 hover-opacity">Contact</Link></div>
+                </div>
+
+                <div className="border-top border-secondary pt-4 mt-4">
+                    {/* Improved contrast for copyright text */}
+                    <p className="small text-light mb-0 opacity-75">
+                        &copy; {new Date().getFullYear()} <strong>VinaTable</strong>. All Rights Reserved.
+                    </p>
+                </div>
             </div>
         </footer>
     );
