@@ -1,68 +1,87 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from '../../components/AuthLayout';
 
 const Login: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!username || !password) {
-            setError('Username and Password are required');
-            return;
-        }
+        setError('');
+        setLoading(true);
+
+        const form = e.currentTarget;
+        // Postman API requires FormData for Login
+        const formData = new FormData(form);
 
         try {
-            const response = await fetch('/account/login', {
+            const response = await fetch('http://localhost:1412/auth/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: formData, // Sending FormData directly
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                navigate('/');
+                // Assuming data contains token based on typical flow, 
+                // though specific response wasn't in the snippet provided for login,
+                // usually it returns a token or user info.
+                alert('Login Successful!');
+                navigate('/'); 
             } else {
-                setError('Invalid credentials');
+                setError(data.message || 'Login failed. Please check your credentials.');
             }
         } catch (err) {
-            setError('Network error');
+            setError('Unable to connect to the server.');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="card-3d-wrap">
-            <div className="card-front">
-                <h4 className="mb-4 text-center fw-bold">Log In</h4>
-                {error && <div className="alert alert-danger">{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group mb-3">
-                        <input 
-                            type="text" 
-                            className="form-style" 
-                            placeholder="Username" 
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group mb-3">
-                        <input 
-                            type="password" 
-                            className="form-style" 
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <button type="submit" className="btn-custom mb-3">Login</button>
-                    <div className="text-center">
-                        <Link to="/recover" className="text-light">Forgot Password?</Link>
-                    </div>
-                </form>
+        <AuthLayout title="Welcome Back" subtitle="Please enter your details to sign in.">
+            {error && <div className="alert alert-danger p-2 mb-3 small">{error}</div>}
+            
+            <form onSubmit={handleSubmit}>
+                <div className="modern-input-group">
+                    <i className="fa fa-envelope"></i>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        className="modern-input" 
+                        placeholder="Email Address" 
+                        required 
+                    />
+                </div>
+                <div className="modern-input-group">
+                    <i className="fa fa-lock"></i>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        className="modern-input" 
+                        placeholder="Password" 
+                        required 
+                    />
+                </div>
+
+                <div className="d-flex justify-content-end mb-3">
+                    <Link to="/forgot-password" style={{fontSize: '13px', color: '#b2744c', textDecoration: 'none'}}>
+                        Forgot Password?
+                    </Link>
+                </div>
+
+                <button type="submit" className="btn-auth" disabled={loading}>
+                    {loading ? 'Signing in...' : 'Sign In'}
+                </button>
+            </form>
+
+            <div className="auth-links">
+                Don't have an account? <Link to="/register">Create free account</Link>
             </div>
-        </div>
+        </AuthLayout>
     );
 };
 
