@@ -12,6 +12,7 @@ import UserProfile from "./pages/User/UserProfile";
 import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import Blogs from "./pages/Blogs";
+import ArticleDetail from "./pages/ArticleDetail";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route path="/blogs" element={<Blogs />} />
+        <Route path="/article/:id" element={<ArticleDetail />} /> 
 
         <Route path="/booking/:restaurantId" element={<BookingForm />} />
         <Route path="/admin/bookings" element={<OwnerBookingOrder />} />

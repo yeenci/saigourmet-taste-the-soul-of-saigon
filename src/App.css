@@ -69,3 +69,145 @@ body {
     color: #333;
     padding: 50px 0;
 }
+
+/* src/App.css additions */
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-up {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.delay-1 { animation-delay: 0.2s; opacity: 0; }
+.delay-2 { animation-delay: 0.4s; opacity: 0; }
+.delay-3 { animation-delay: 0.6s; opacity: 0; }
+
+/* Stats Section */
+.stat-card {
+  transition: transform 0.3s ease;
+}
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+.stat-icon {
+  font-size: 2.5rem;
+  color: #b2744c;
+  margin-bottom: 15px;
+}
+
+/* Call to Action Banner */
+.cta-banner {
+  background: #b2744c;
+  color: white;
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* Navbar Enhancements */
+.navbar-custom {
+    background-color: #b2744c;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.nav-link-custom {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    margin: 0 5px;
+}
+
+.nav-link-custom:hover {
+    color: #ffffff !important;
+    text-shadow: 0 0 5px rgba(255,255,255,0.4);
+}
+
+/* Hero Enhancements */
+.hero-section {
+    position: relative;
+    height: 85vh;
+    min-height: 600px;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* Darker overlay for better text readability */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)); 
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Text shadow for legibility */
+}
+
+/* Search Bar Pop */
+.hero-search-input {
+    height: 60px;
+    border-radius: 30px 0 0 30px;
+    border: none;
+    padding-left: 30px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.hero-search-btn {
+    height: 60px;
+    border-radius: 0 30px 30px 0;
+    background-color: #b2744c;
+    border: 2px solid #b2744c;
+    padding: 0 40px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.hero-search-btn:hover {
+    background-color: #8f5a38;
+    border-color: #8f5a38;
+}
+
+/* Section Titles */
+.section-title-line {
+    width: 80px;
+    height: 4px;
+    background: #b2744c;
+    margin: 15px auto;
+    border-radius: 2px;
+}
+
+/* Blog Card Hover Effect */
+.hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-scale:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}

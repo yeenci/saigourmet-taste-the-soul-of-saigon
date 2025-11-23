@@ -1,5 +1,5 @@
 import React from 'react';
-import '../Auth.css'; // Make sure to import the CSS
+import '../Auth.css';
 
 interface AuthLayoutProps {
     title: string;
@@ -14,8 +14,8 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ title, subtitle, children }) =>
             <div className="auth-image-side">
                 <div className="auth-overlay"></div>
                 <div className="auth-quote">
-                    <h1>Dine Saigon</h1>
-                    <p className="lead">Experience the authentic taste of Vietnam with just a few clicks.</p>
+                    <h1 className="font-playfair">VinaTable</h1>
+                    <p className="lead fs-4">Reserve the best tables in town.<br/>Seamless. Fast. Delicious.</p>
                 </div>
             </div>
 
