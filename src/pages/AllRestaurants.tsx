@@ -27,7 +27,7 @@ const AllRestaurants: React.FC = () => {
     const fetchRestaurants = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://app.lemanh0902.id.vn/restaurant/");
+        const response = await fetch('/api-proxy/restaurant/');
         const result = await response.json();
 
         if (result.data) {
