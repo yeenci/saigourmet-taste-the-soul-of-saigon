@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
           to="/"
         >
           <img
-            src="/assets/logo.png"
+            src="../assets/SaiGourmet.png"
             alt="Logo"
             width="45"
             height="45"
@@ -49,11 +49,11 @@ const Navbar: React.FC = () => {
             </li>
             <li className="nav-item">
               {/* <a href="#category" className="nav-link nav-link-custom">Categories</a> */}
-              <Link to="/category" className={`nav-link nav-link-custom ${isActive('/category')}`}>Categories</Link>
+              <Link to="/categories" className={`nav-link nav-link-custom ${isActive('/categories')}`}>Categories</Link>
             </li>
             <li className="nav-item">
               {/* <a href="#restaurant" className="nav-link nav-link-custom">Restaurants</a> */}
-              <Link to="/restaurant" className={`nav-link nav-link-custom ${isActive('/restaurant')}`}>Restaurants</Link>
+              <Link to="/restaurants/all" className={`nav-link nav-link-custom ${isActive('/restaurants/all')}`}>Restaurants</Link>
             </li>
             <li className="nav-item">
               {/* <a href="#blogs" className="nav-link nav-link-custom">Blogs</a> */}
