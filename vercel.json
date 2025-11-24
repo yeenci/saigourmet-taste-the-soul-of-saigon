@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api-proxy/:path*",
+      "source": "/api/:path*",
       "destination": "http://app.lemanh0902.id.vn/:path*"
     }
   ]
