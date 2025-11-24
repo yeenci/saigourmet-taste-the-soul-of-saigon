@@ -17,6 +17,7 @@ import CategoryPage from "./pages/CategoryPage";
 import AllCategories from "./pages/AllCategories";
 import AllRestaurants from "./pages/AllRestaurants";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 const App: React.FC = () => {
   return (
@@ -40,7 +41,10 @@ const App: React.FC = () => {
         <Route path="/booking/:restaurantId" element={<BookingForm />} />
         <Route path="/admin/bookings" element={<OwnerBookingOrder />} />
         <Route path="/admin/create-restaurant" element={<CreateRestaurant />} />
+
         <Route path="/profile" element={<UserProfile />} />
+
+        <Route path="/contact" element={<Contact />} />
         {/* Add routes for Register, Recover, etc. */}
         <Route
           path="*"
