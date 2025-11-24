@@ -212,11 +212,11 @@ const AllRestaurants: React.FC = () => {
                             style={{ height: "220px", objectFit: "cover" }}
                             onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/300")}
                           />
-                          {restaurant.rating >= 4.5 && (
+                          {restaurant.rating >= 4.4 && (
                             <span className={`position-absolute top-0 end-0 m-2 badge shadow-sm ${
-                              restaurant.rating > 4.8 ? "bg-warning text-dark" : "bg-white text-dark"
+                              restaurant.rating > 4.7 ? "bg-warning text-dark" : "bg-white text-dark"
                             }`}>
-                              {restaurant.rating > 4.8 ? "Highly Recommend" : "Recommend"}
+                              {restaurant.rating > 4.7 ? "Highly Recommend" : "Recommend"}
                             </span>
                           )}
                         </div>
