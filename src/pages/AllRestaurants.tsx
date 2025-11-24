@@ -5,7 +5,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import type { Restaurant } from "../lib/types";
-import { CATEGORIES } from "../lib/constants";
+import { CATEGORIES, DISTRICTS } from "../lib/constants";
 
 // Extended Interface for local mock data to support categories/price
 interface ExtendedRestaurant extends Restaurant {
@@ -232,16 +232,19 @@ const AllRestaurants: React.FC = () => {
                 <label className="form-label fw-bold small text-muted text-uppercase">
                   District
                 </label>
+
                 <select
                   className="form-select"
                   value={filterDistrict}
                   onChange={(e) => setFilterDistrict(e.target.value)}
                 >
                   <option value="All">All Districts</option>
-                  <option value="District 1">District 1</option>
-                  <option value="District 2">District 2</option>
-                  <option value="District 3">District 3</option>
-                  <option value="Binh Thanh">Binh Thanh</option>
+
+                  {DISTRICTS.map((dist) => (
+                    <option key={dist.districtId} value={dist.districtId}>
+                      {dist.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 

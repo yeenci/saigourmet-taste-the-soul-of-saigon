@@ -46,7 +46,6 @@ export interface District {
     districtId: string;
     name: string;
     image: string;
-    icon: string;
 }
 
 export interface Restaurant {

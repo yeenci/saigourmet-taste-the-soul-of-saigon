@@ -82,4 +82,143 @@ export const CATEGORIES: Category[] = [
 
 export const ARTICLE: Article[] = [];
 
-export const DISTRICTS: District[] = [];
+export const DISTRICTS: District[] = [  
+  {
+    districtId: "District1",
+    name: "District 1",
+    image:
+      "",
+  },
+  {
+    districtId: "District2",
+    name: "District 2",
+    image:
+      "",
+  },
+  {
+    districtId: "District3",
+    name: "District 3",
+    image:
+      "",
+  },
+  {
+    districtId: "District4",
+    name: "District 4",
+    image:
+      "",
+  },
+  {
+    districtId: "District5",
+    name: "District 5",
+    image:
+      "",
+  },
+  {
+    districtId: "District6",
+    name: "District 6",
+    image:
+      "",
+  },
+  {
+    districtId: "District7",
+    name: "District 7",
+    image:
+      "",
+  },
+  {
+    districtId: "District8",
+    name: "District 8",
+    image:
+      "",
+  },
+  {
+    districtId: "District9",
+    name: "District 9",
+    image:
+      "",
+  },
+  {
+    districtId: "District10",
+    name: "District 10",
+    image:
+      "",
+  },
+  {
+    districtId: "District11",
+    name: "District 11",
+    image:
+      "",
+  },
+  {
+    districtId: "BinhThanhDistrict",
+    name: "Binh Thanh District",
+    image:
+      "",
+  },
+  {
+    districtId: "TanBinhDistrict",
+    name: "Tan Binh District",
+    image:
+      "",
+  },
+  {
+    districtId: "TanPhuDistrict",
+    name: "Tan Phu District",
+    image:
+      "",
+  },
+  {
+    districtId: "GoVapDistrict",
+    name: "Go Vap District",
+    image:
+      "",
+  },
+  {
+    districtId: "PhuNhuanDistrict",
+    name: "Phu Nhuan District",
+    image:
+      "",
+  },
+  {
+    districtId: "BinhTanDistrict",
+    name: "Binh Tan District",
+    image:
+      "",
+  },
+  {
+    districtId: "ThuducCity",
+    name: "Thu Duc City",
+    image:
+      "",
+  },
+  {
+    districtId: "DistrictBinhChanh",
+    name: "Binh Chanh District",
+    image:
+      "",
+  },
+  {
+    districtId: "HocMonDistrict",
+    name: "Hoc Mon District",
+    image:
+      "",
+  },
+  {
+    districtId: "CuChiDistrict",
+    name: "Cu Chi District",
+    image:
+      "",
+  },
+  {
+    districtId: "CanGioDistrict",
+    name: "Can Gio District",
+    image:
+      "",
+  },
+  {
+    districtId: "NhaBeDistrict",
+    name: "Nha Be District",
+    image:
+      "",
+  },
+];
