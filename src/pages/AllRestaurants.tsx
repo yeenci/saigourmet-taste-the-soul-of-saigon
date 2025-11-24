@@ -17,7 +17,7 @@ const AllRestaurants: React.FC = () => {
 
   const [allRestaurants, setAllRestaurants] = useState<Restaurant[]>([]);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  
+
   // Start loading as true
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,13 +27,13 @@ const AllRestaurants: React.FC = () => {
     const fetchRestaurants = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/restaurant/');
+        const response = await fetch("/api/restaurant/");
         const result = await response.json();
 
         if (result.data) {
           const safeData = result.data.map((item: any) => ({
             ...item,
-            categories: item.categories || []
+            categories: item.categories || [],
           }));
 
           setAllRestaurants(safeData);
@@ -73,7 +73,9 @@ const AllRestaurants: React.FC = () => {
     // Filter by Category
     if (filterCategory !== "All") {
       // FIX: Add ( || []) to prevent crash if categories is undefined
-      filtered = filtered.filter((r) => (r.categories || []).includes(filterCategory));
+      filtered = filtered.filter((r) =>
+        (r.categories || []).includes(filterCategory)
+      );
     }
 
     setRestaurants(filtered);
@@ -134,7 +136,10 @@ const AllRestaurants: React.FC = () => {
         <div className="row">
           {/* --- SIDEBAR FILTERS --- */}
           <div className="col-lg-3 mb-4">
-            <div className="card border-0 shadow-sm p-3 position-sticky" style={{ top: "100px" }}>
+            <div
+              className="card border-0 shadow-sm p-3 position-sticky"
+              style={{ top: "100px" }}
+            >
               <h5 className="fw-bold mb-3">
                 <i className="fa fa-sliders me-2"></i>Filters
               </h5>
@@ -195,7 +200,10 @@ const AllRestaurants: React.FC = () => {
           <div className="col-lg-9">
             {loading ? (
               <div className="text-center py-5">
-                <div className="spinner-border text-warning" role="status"></div>
+                <div
+                  className="spinner-border text-warning"
+                  role="status"
+                ></div>
               </div>
             ) : currentItems.length > 0 ? (
               <>
@@ -206,34 +214,55 @@ const AllRestaurants: React.FC = () => {
                         <div className="position-relative">
                           {/* Image fallback if picture is empty */}
                           <img
-                            src={restaurant.picture || "https://via.placeholder.com/300"}
+                            src={
+                              restaurant.picture ||
+                              "https://via.placeholder.com/300"
+                            }
                             alt={restaurant.name}
                             className="card-img-top"
                             style={{ height: "220px", objectFit: "cover" }}
-                            onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/300")}
+                            onError={(e) =>
+                              (e.currentTarget.src =
+                                "https://via.placeholder.com/300")
+                            }
                           />
                           {restaurant.rating >= 4.4 && (
-                            <span className={`position-absolute top-0 end-0 m-2 badge shadow-sm ${
-                              restaurant.rating > 4.7 ? "bg-warning text-dark" : "bg-white text-dark"
-                            }`}>
-                              {restaurant.rating > 4.7 ? "Highly Recommend" : "Recommend"}
+                            <span
+                              className={`position-absolute top-0 end-0 m-2 badge shadow-sm ${
+                                restaurant.rating > 4.7
+                                  ? "bg-warning text-dark"
+                                  : "bg-white text-dark"
+                              }`}
+                            >
+                              {restaurant.rating > 4.7
+                                ? "Highly Recommend"
+                                : "Recommend"}
                             </span>
                           )}
                         </div>
                         <div className="card-body d-flex flex-column p-4">
                           <div className="d-flex justify-content-between align-items-start mb-2">
-                            <h5 className="card-title fw-bold font-playfair mb-0 text-truncate" style={{ maxWidth: "75%" }}>
+                            <h5
+                              className="card-title fw-bold font-playfair mb-0 text-truncate"
+                              style={{ maxWidth: "75%" }}
+                            >
                               {restaurant.name}
                             </h5>
                             <span className="badge bg-success">
-                              {restaurant.rating?.toFixed(1)} <i className="fa fa-star ms-1"></i>
+                              {restaurant.rating?.toFixed(1)}{" "}
+                              <i className="fa fa-star ms-1"></i>
                             </span>
                           </div>
 
                           <div className="mb-2">
                             {/* FIX: Check if categories exist before slicing/mapping */}
-                            {(restaurant.categories || []).slice(0, 3).map((cat, idx) => (
-                                <span key={idx} className="badge bg-light text-secondary me-1 border">
+                            {(restaurant.categories || [])
+                              .slice(0, 3)
+                              .map((cat, idx) => (
+                                <span
+                                  key={idx}
+                                  className="badge bg-light text-secondary me-1 border"
+                                >
                                   {cat}
                                 </span>
                               ))}
@@ -248,7 +277,11 @@ const AllRestaurants: React.FC = () => {
                           </p>
 
                           <Link
-                            to={`/booking/${restaurant.restaurantId}?restaurant_name=${encodeURIComponent(restaurant.name)}`}
+                            to={`/booking/${
+                              restaurant.restaurantId
+                            }?restaurant_name=${encodeURIComponent(
+                              restaurant.name
+                            )}`}
                             className="btn btn-outline-primary w-100 fw-bold rounded-pill"
                             style={{ borderColor: "#b2744c", color: "#b2744c" }}
                             onMouseOver={(e) => {
@@ -256,7 +289,8 @@ const AllRestaurants: React.FC = () => {
                               e.currentTarget.style.color = "white";
                             }}
                             onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.backgroundColor =
+                                "transparent";
                               e.currentTarget.style.color = "#b2744c";
                             }}
                           >
@@ -272,24 +306,50 @@ const AllRestaurants: React.FC = () => {
                 {totalPages > 1 && (
                   <nav>
                     <ul className="pagination justify-content-center">
-                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                        <button className="page-link" onClick={() => setCurrentPage((p) => p - 1)}>
+                      <li
+                        className={`page-item ${
+                          currentPage === 1 ? "disabled" : ""
+                        }`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => setCurrentPage((p) => p - 1)}
+                        >
                           Previous
                         </button>
                       </li>
                       {[...Array(totalPages)].map((_, i) => (
-                        <li key={i} className={`page-item ${currentPage === i + 1 ? "active" : ""}`}>
+                        <li
+                          key={i}
+                          className={`page-item ${
+                            currentPage === i + 1 ? "active" : ""
+                          }`}
+                        >
                           <button
                             className="page-link"
                             onClick={() => setCurrentPage(i + 1)}
-                            style={currentPage === i + 1 ? { backgroundColor: "#b2744c", borderColor: "#b2744c" } : {}}
+                            style={
+                              currentPage === i + 1
+                                ? {
+                                    backgroundColor: "#b2744c",
+                                    borderColor: "#b2744c",
+                                  }
+                                : {}
+                            }
                           >
                             {i + 1}
                           </button>
                         </li>
                       ))}
-                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                        <button className="page-link" onClick={() => setCurrentPage((p) => p + 1)}>
+                      <li
+                        className={`page-item ${
+                          currentPage === totalPages ? "disabled" : ""
+                        }`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => setCurrentPage((p) => p + 1)}
+                        >
                           Next
                         </button>
                       </li>
@@ -301,7 +361,9 @@ const AllRestaurants: React.FC = () => {
               <div className="text-center py-5">
                 <i className="fa fa-frown-o fa-4x text-muted mb-3 opacity-50"></i>
                 <h3>No results found</h3>
-                <p className="text-muted">Try adjusting your search or filters.</p>
+                <p className="text-muted">
+                  Try adjusting your search or filters.
+                </p>
                 <button
                   className="btn btn-link text-warning fw-bold"
                   onClick={() => {
