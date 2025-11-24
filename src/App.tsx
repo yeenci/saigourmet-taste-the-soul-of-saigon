@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
 // Pages
@@ -30,17 +30,17 @@ const App: React.FC = () => {
 
         <Route path="/about" element={<About />} />
 
+        <Route path="/restaurants" element={<Navigate to="/restaurants/all" replace />} />
         <Route path="/restaurants/all" element={<AllRestaurants />} />
+        <Route path="/booking/:restaurantId" element={<BookingForm />} />
+        <Route path="/admin/bookings" element={<OwnerBookingOrder />} />
+        <Route path="/admin/create-restaurant" element={<CreateRestaurant />} />
 
         <Route path="/categories" element={<AllCategories />} />
         <Route path="/category/:id" element={<CategoryPage />} />
 
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/article/:id" element={<ArticleDetail />} />
-
-        <Route path="/booking/:restaurantId" element={<BookingForm />} />
-        <Route path="/admin/bookings" element={<OwnerBookingOrder />} />
-        <Route path="/admin/create-restaurant" element={<CreateRestaurant />} />
 
         <Route path="/profile" element={<UserProfile />} />
 
