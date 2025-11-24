@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import type { Restaurant } from '../types';
+import type { Restaurant } from '../lib/types';
 
 // Mock Data (Expanded for demonstration)
 const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [

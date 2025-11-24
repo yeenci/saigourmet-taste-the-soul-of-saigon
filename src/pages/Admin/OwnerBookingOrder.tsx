@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
-import type { Booking } from '../../types';
+import type { Booking } from '../../lib/types';
 
 const OwnerBookingOrder: React.FC = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);

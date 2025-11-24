@@ -36,9 +36,17 @@ export interface Article {
 }
 
 export interface Category {
-    categoryId: string; // or number, depending on backend
+    categoryId: string;
     name: string;
     image: string;
+    icon: string;
+}
+
+export interface District {
+    districtId: string;
+    name: string;
+    image: string;
+    icon: string;
 }
 
 export interface Restaurant {

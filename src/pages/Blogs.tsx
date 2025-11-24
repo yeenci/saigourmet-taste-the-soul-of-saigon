@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import type { Article } from '../types';
+import type { Article } from '../lib/types';
 
 const Blogs: React.FC = () => {
     const [articles, setArticles] = useState<Article[]>([]);
@@ -27,7 +27,7 @@ const Blogs: React.FC = () => {
             {
                 articleId: 103,
                 title: "Best Rooftop Bars for Sunset",
-                image: "https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&w=600&q=80",
+                image: "https://plus.unsplash.com/premium_photo-1736238795669-d8a908d893fa?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 content: "Catch the golden hour at these spectacular rooftop venues overlooking the skyline. Perfect for romantic dates or chilling with friends."
             },
             {
@@ -39,7 +39,7 @@ const Blogs: React.FC = () => {
             {
                 articleId: 105,
                 title: "The History of Banh Mi",
-                image: "https://images.unsplash.com/photo-1541544537156-21c2d906f0d7?auto=format&fit=crop&w=600&q=80",
+                image: "https://images.unsplash.com/photo-1599719455360-ff0be7c4dd06?q=80&w=1149&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 content: "How a French baguette became a Vietnamese icon. We dive deep into the history and variations of the world-famous Banh Mi."
             },
             {

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import type { Restaurant } from '../types';
+import type { Restaurant } from '../lib/types';
 
 const TopRestaurants: React.FC = () => {
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);

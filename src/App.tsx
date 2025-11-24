@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import "./App.css";
 
 // Pages
@@ -18,10 +23,13 @@ import AllCategories from "./pages/AllCategories";
 import AllRestaurants from "./pages/AllRestaurants";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App: React.FC = () => {
   return (
     <Router>
+      <ScrollToTop />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -30,7 +38,10 @@ const App: React.FC = () => {
 
         <Route path="/about" element={<About />} />
 
-        <Route path="/restaurants" element={<Navigate to="/restaurants/all" replace />} />
+        <Route
+          path="/restaurants"
+          element={<Navigate to="/restaurants/all" replace />}
+        />
         <Route path="/restaurants/all" element={<AllRestaurants />} />
         <Route path="/booking/:restaurantId" element={<BookingForm />} />
         <Route path="/admin/bookings" element={<OwnerBookingOrder />} />

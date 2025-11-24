@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import type { Article } from "../types";
+import type { Article } from "../lib/types";
 
 const ArticleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -47,7 +47,7 @@ const ArticleDetail: React.FC = () => {
         articleId: 103,
         title: "Best Rooftop Bars for Sunset",
         image:
-          "https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&w=1200&q=80",
+          "https://plus.unsplash.com/premium_photo-1736238795669-d8a908d893fa?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         content:
           "Catch the golden hour at these spectacular rooftop venues overlooking the skyline. Perfect for romantic dates or chilling with friends...",
       },
