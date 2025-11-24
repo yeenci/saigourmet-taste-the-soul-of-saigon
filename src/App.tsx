@@ -13,6 +13,10 @@ import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import Blogs from "./pages/Blogs";
 import ArticleDetail from "./pages/ArticleDetail";
+import CategoryPage from "./pages/CategoryPage";
+import AllCategories from "./pages/AllCategories";
+import AllRestaurants from "./pages/AllRestaurants";
+import About from "./pages/About";
 
 const App: React.FC = () => {
   return (
@@ -23,8 +27,15 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
+        <Route path="/about" element={<About />} />
+
+        <Route path="/restaurants/all" element={<AllRestaurants />} />
+
+        <Route path="/categories" element={<AllCategories />} />
+        <Route path="/category/:id" element={<CategoryPage />} />
+
         <Route path="/blogs" element={<Blogs />} />
-        <Route path="/article/:id" element={<ArticleDetail />} /> 
+        <Route path="/article/:id" element={<ArticleDetail />} />
 
         <Route path="/booking/:restaurantId" element={<BookingForm />} />
         <Route path="/admin/bookings" element={<OwnerBookingOrder />} />
