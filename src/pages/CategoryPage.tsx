@@ -1,0 +1,232 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import type { Restaurant } from '../types';
+
+// Mock Data (Expanded for demonstration)
+const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [
+    {
+        restaurantId: 1,
+        name: "The Deck Saigon",
+        address: "38 Nguyen U Di, Thao Dien",
+        district: "District 2",
+        picture: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60",
+        rating: 4.8,
+        openTime: "08:00",
+        closeTime: "23:00",
+        categories: ["Dinner", "Bar", "River View"]
+    },
+    {
+        restaurantId: 2,
+        name: "Pizza 4P's Ben Thanh",
+        address: "8 Thu Khoa Huan",
+        district: "District 1",
+        picture: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=60",
+        rating: 4.9,
+        openTime: "10:00",
+        closeTime: "22:00",
+        categories: ["Dinner", "Lunch", "Family"]
+    },
+    {
+        restaurantId: 3,
+        name: "Secret Garden",
+        address: "158 Pasteur",
+        district: "District 1",
+        picture: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=60",
+        rating: 4.7,
+        openTime: "07:00",
+        closeTime: "22:00",
+        categories: ["Dinner", "Traditional"]
+    },
+    {
+        restaurantId: 4,
+        name: "The Workshop Coffee",
+        address: "27 Ngo Duc Ke",
+        district: "District 1",
+        picture: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=500&q=60",
+        rating: 4.6,
+        openTime: "08:00",
+        closeTime: "21:00",
+        categories: ["Cafe", "Brunch"]
+    },
+    {
+        restaurantId: 5,
+        name: "Lush Nightclub",
+        address: "2 Ly Tu Trong",
+        district: "District 1",
+        picture: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=500&q=60",
+        rating: 4.5,
+        openTime: "21:00",
+        closeTime: "04:00",
+        categories: ["Club", "Bar", "Event"]
+    },
+    {
+        restaurantId: 6,
+        name: "Godmother Bake & Brunch",
+        address: "Dong Khoi, Level 3",
+        district: "District 1",
+        picture: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=60",
+        rating: 4.7,
+        openTime: "08:00",
+        closeTime: "16:00",
+        categories: ["Brunch", "Cafe"]
+    }
+];
+
+const CategoryPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>(); // e.g., "Cafe", "Dinner"
+    const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [filterDistrict, setFilterDistrict] = useState("All");
+
+    // Dynamic Header Backgrounds based on category
+    const getHeaderImage = (cat: string) => {
+        switch(cat?.toLowerCase()) {
+            case 'cafe': return 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1500&q=80';
+            case 'bar': return 'https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&w=1500&q=80';
+            case 'club': return 'https://images.unsplash.com/photo-1574155376612-c84efdd3a64f?auto=format&fit=crop&w=1500&q=80';
+            default: return 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1500&q=80';
+        }
+    };
+
+    useEffect(() => {
+        setLoading(true);
+        // Simulate API Fetch
+        setTimeout(() => {
+            // Filter mock data by category (case insensitive partial match for demo)
+            const filtered = MOCK_RESTAURANTS.filter(r => 
+                r.categories.some(c => c.toLowerCase() === id?.toLowerCase())
+            );
+            setRestaurants(filtered);
+            setLoading(false);
+        }, 500);
+        // Scroll to top on category change
+        window.scrollTo(0, 0);
+    }, [id]);
+
+    // Client-side District Filtering
+    const displayedRestaurants = filterDistrict === "All" 
+        ? restaurants 
+        : restaurants.filter(r => r.district === filterDistrict);
+
+    return (
+        <div className="d-flex flex-column min-vh-100 bg-light">
+            <Navbar />
+
+            {/* --- HEADER BANNER --- */}
+            <div 
+                className="position-relative d-flex align-items-center justify-content-center text-center"
+                style={{
+                    height: '350px',
+                    backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("${getHeaderImage(id || '')}")`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }}
+            >
+                <div className="container text-white" style={{zIndex: 2}}>
+                    <p className="text-uppercase ls-1 fw-bold mb-2 text-warning">Explore</p>
+                    <h1 className="display-3 fw-bold font-playfair mb-3">{id} Collection</h1>
+                    <p className="lead opacity-90">The best spots for {id?.toLowerCase()} in Ho Chi Minh City</p>
+                </div>
+            </div>
+
+            <div className="container py-5">
+                
+                {/* --- FILTERS & BREADCRUMB --- */}
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+                    <nav aria-label="breadcrumb" className="mb-3 mb-md-0">
+                        <ol className="breadcrumb mb-0">
+                            <li className="breadcrumb-item"><Link to="/" className="text-decoration-none text-muted">Home</Link></li>
+                            <li className="breadcrumb-item active text-dark fw-bold" aria-current="page">{id}</li>
+                        </ol>
+                    </nav>
+
+                    <div className="d-flex align-items-center gap-2">
+                        <label className="fw-bold text-muted small me-1">Filter by District:</label>
+                        <select 
+                            className="form-select form-select-sm" 
+                            style={{width: '150px', borderColor: '#b2744c'}}
+                            value={filterDistrict}
+                            onChange={(e) => setFilterDistrict(e.target.value)}
+                        >
+                            <option value="All">All Districts</option>
+                            <option value="District 1">District 1</option>
+                            <option value="District 2">District 2</option>
+                            <option value="District 3">District 3</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* --- CONTENT --- */}
+                {loading ? (
+                    <div className="text-center py-5">
+                        <div className="spinner-border text-warning" role="status"></div>
+                    </div>
+                ) : displayedRestaurants.length > 0 ? (
+                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {displayedRestaurants.map((restaurant) => (
+                            <div className="col" key={restaurant.restaurantId}>
+                                <div className="card h-100 border-0 shadow-sm hover-scale overflow-hidden">
+                                    <div className="position-relative">
+                                        <img
+                                            src={restaurant.picture}
+                                            alt={restaurant.name}
+                                            className="card-img-top"
+                                            style={{ height: '240px', objectFit: 'cover' }}
+                                        />
+                                        <span className="position-absolute top-0 end-0 m-3 badge bg-success shadow">
+                                            {restaurant.rating.toFixed(1)} <i className="fa fa-star ms-1"></i>
+                                        </span>
+                                    </div>
+                                    <div className="card-body d-flex flex-column p-4">
+                                        <h5 className="card-title fw-bold font-playfair mb-2">{restaurant.name}</h5>
+                                        
+                                        <div className="mb-3">
+                                            <p className="text-muted small mb-1">
+                                                <i className="fa fa-map-marker me-2 text-danger"></i> 
+                                                {restaurant.district}
+                                            </p>
+                                            <p className="text-muted small mb-0">
+                                                <i className="fa fa-clock-o me-2 text-primary"></i>
+                                                {restaurant.openTime} - {restaurant.closeTime}
+                                            </p>
+                                        </div>
+
+                                        <p className="text-muted small mb-3 flex-grow-1">
+                                            {restaurant.address}
+                                        </p>
+
+                                        <div className="d-grid">
+                                            <Link 
+                                                to={`/booking/${restaurant.restaurantId}?restaurant_name=${encodeURIComponent(restaurant.name)}`} 
+                                                className="btn btn-outline-dark fw-bold rounded-pill"
+                                            >
+                                                Book Table
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    // Empty State
+                    <div className="text-center py-5">
+                        <i className="fa fa-search fa-4x text-muted mb-3 opacity-50"></i>
+                        <h3 className="fw-bold text-muted">No restaurants found</h3>
+                        <p className="text-muted">We couldn't find any {id} spots in {filterDistrict === 'All' ? 'Saigon' : filterDistrict}.</p>
+                        <button className="btn btn-outline-warning mt-2" onClick={() => setFilterDistrict("All")}>
+                            Clear Filters
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <Footer />
+        </div>
+    );
+};
+
+export default CategoryPage;

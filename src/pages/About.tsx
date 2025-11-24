@@ -21,7 +21,7 @@ const About: React.FC = () => {
             >
                 <div className="container text-white" style={{ zIndex: 2 }}>
                     <span className="badge bg-warning text-dark mb-3 text-uppercase fw-bold ls-1 px-3 py-2">Our Story</span>
-                    <h1 className="display-3 fw-bold font-playfair mb-3">About VinaTable</h1>
+                    <h1 className="display-3 fw-bold font-playfair mb-3">About SaiGourmet</h1>
                     <p className="lead opacity-90 fs-4">Connecting food lovers with the soul of Saigon's culinary scene.</p>
                 </div>
             </div>
@@ -48,7 +48,7 @@ const About: React.FC = () => {
                                 We simplified dining <br/> <span style={{color: '#b2744c'}}>reservations.</span>
                             </h2>
                             <p className="text-secondary fs-5" style={{lineHeight: '1.8'}}>
-                                Founded in 2025, VinaTable was born from a simple frustration: finding a great table in Saigon was harder than it should be. 
+                                Founded in 2025, SaiGourmet was born from a simple frustration: finding a great table in Saigon was harder than it should be. 
                             </p>
                             <p className="text-muted mb-4">
                                 Ho Chi Minh City is a culinary paradise, from street-side plastic stools to Michelin-star fine dining. Our mission is to bridge the gap between hungry diners and the amazing restaurants that feed this city.
@@ -127,7 +127,7 @@ const About: React.FC = () => {
                                     </div>
                                 </div>
                                 <h4 className="fw-bold mb-3">Passion for Food</h4>
-                                <p className="text-muted">We don't just list restaurants; we celebrate them. Every venue on VinaTable is vetted for quality.</p>
+                                <p className="text-muted">We don't just list restaurants; we celebrate them. Every venue on SaiGourmet is vetted for quality.</p>
                             </div>
                         </div>
                         <div className="col-md-4">
