@@ -8,7 +8,7 @@ import type { Restaurant } from '../lib/types';
 // Mock Data (Expanded for demonstration)
 const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [
     {
-        restaurantId: 1,
+        restaurantId: "1",
         name: "The Deck Saigon",
         address: "38 Nguyen U Di, Thao Dien",
         district: "District 2",
@@ -19,7 +19,7 @@ const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [
         categories: ["Dinner", "Bar", "River View"]
     },
     {
-        restaurantId: 2,
+        restaurantId: "2",
         name: "Pizza 4P's Ben Thanh",
         address: "8 Thu Khoa Huan",
         district: "District 1",
@@ -30,7 +30,7 @@ const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [
         categories: ["Dinner", "Lunch", "Family"]
     },
     {
-        restaurantId: 3,
+        restaurantId: "3",
         name: "Secret Garden",
         address: "158 Pasteur",
         district: "District 1",
@@ -41,7 +41,7 @@ const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [
         categories: ["Dinner", "Traditional"]
     },
     {
-        restaurantId: 4,
+        restaurantId: "4",
         name: "The Workshop Coffee",
         address: "27 Ngo Duc Ke",
         district: "District 1",
@@ -52,7 +52,7 @@ const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [
         categories: ["Cafe", "Brunch"]
     },
     {
-        restaurantId: 5,
+        restaurantId: "5",
         name: "Lush Nightclub",
         address: "2 Ly Tu Trong",
         district: "District 1",
@@ -63,7 +63,7 @@ const MOCK_RESTAURANTS: (Restaurant & { categories: string[] })[] = [
         categories: ["Club", "Bar", "Event"]
     },
     {
-        restaurantId: 6,
+        restaurantId: "6",
         name: "Godmother Bake & Brunch",
         address: "Dong Khoi, Level 3",
         district: "District 1",

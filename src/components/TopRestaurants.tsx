@@ -16,7 +16,7 @@ const TopRestaurants: React.FC = () => {
     // Mock Data
     const mockTop3: UIRestaurant[] = [
       {
-        restaurantId: 1,
+        restaurantId: "1",
         name: "The Deck Saigon",
         address: "38 Nguyen U Di, Thao Dien",
         district: "District 2",
@@ -29,7 +29,7 @@ const TopRestaurants: React.FC = () => {
         price: "$$$",
       },
       {
-        restaurantId: 2,
+        restaurantId: "2",
         name: "Pizza 4P's Ben Thanh",
         address: "8 Thu Khoa Huan",
         district: "District 1",
@@ -42,7 +42,7 @@ const TopRestaurants: React.FC = () => {
         price: "$$",
       },
       {
-        restaurantId: 3,
+        restaurantId: "3",
         name: "Secret Garden",
         address: "158 Pasteur",
         district: "District 1",

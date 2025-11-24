@@ -270,11 +270,11 @@ const CreateRestaurant: React.FC = () => {
                     <div
                       key={cat.categoryId}
                       className={`category-chip ${
-                        formData.selectedCategories.includes(cat.categoryId)
+                        formData.selectedCategories.includes(String(cat.categoryId))
                           ? "active"
                           : ""
                       }`}
-                      onClick={() => toggleCategory(cat.categoryId)}
+                      onClick={() => toggleCategory(String(cat.categoryId))}
                     >
                       <i className={`fa ${cat.icon}`}></i> {cat.name}
                     </div>

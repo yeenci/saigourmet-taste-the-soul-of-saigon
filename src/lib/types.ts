@@ -20,7 +20,7 @@ export interface UserProfileData {
 }
 
 export interface Restaurant {
-  restaurantId: number;
+  restaurantId: string;
   name: string;
   address: string;
   district: string;
@@ -28,7 +28,7 @@ export interface Restaurant {
   rating: number;
   openTime: string;
   closeTime: string;
-  categories: string[];
+  categories?: string[];
 }
 
 export interface Booking {
@@ -60,16 +60,16 @@ export interface District {
   image: string;
 }
 
-export interface Restaurant {
-  restaurantId: number;
-  name: string;
-  address: string;
-  district: string;
-  picture: string;
-  rating: number;
-  openTime: string;
-  closeTime: string;
-}
+// export interface Restaurant {
+//   restaurantId: string;
+//   name: string;
+//   address: string;
+//   district: string;
+//   picture: string;
+//   rating: number;
+//   openTime: string;
+//   closeTime: string;
+// }
 
 export interface Article {
   articleId: number;
