@@ -2,223 +2,242 @@ import type { Article, Category, District } from "./types";
 
 export const CATEGORIES: Category[] = [
   {
-    categoryId: "Activity",
+    categoryId: 1,
     name: "Activity",
     icon: "fa-ticket",
     image:
       "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Bar",
+    categoryId: 2,
     name: "Bar",
     icon: "fa-glass",
     image:
       "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Bistro",
+    categoryId: 3,
     name: "Bistro",
     icon: "fa-beer",
     image:
       "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Brunch",
+    categoryId: 4,
     name: "Brunch",
     icon: "fa-sun-o",
     image:
       "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Cafe",
+    categoryId: 5,
     name: "Cafe",
     icon: "fa-coffee",
     image:
       "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Club",
+    categoryId: 6,
     name: "Club",
     icon: "fa-music",
     image:
       "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Dinner",
+    categoryId: 7,
     name: "Dinner",
     icon: "fa-cutlery",
     image:
       "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Event",
+    categoryId: 8,
     name: "Event",
     icon: "fa-calendar",
     image:
       "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "FineDining",
+    categoryId: 9,
+    name: "Experience",
+    icon: "fa-magic",
+    image:
+      "https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&w=500&q=60",
+  },
+  {
+    categoryId: 10,
+    name: "Family",
+    icon: "fa-users",
+    image:
+      "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=500&q=60",
+  },
+  {
+    categoryId: 11,
     name: "Fine Dining",
     icon: "fa-star",
     image:
       "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "Lunch",
+    categoryId: 12,
+    name: "Italian",
+    icon: "fa-cutlery",
+    image:
+      "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&w=500&q=60",
+  },
+  {
+    categoryId: 13,
     name: "Lunch",
     icon: "fa-cutlery",
     image:
       "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=60",
   },
   {
-    categoryId: "StreetFood",
+    categoryId: 14,
+    name: "River View",
+    icon: "fa-tint",
+    image:
+      "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=500&q=60",
+  },
+  {
+    categoryId: 15,
     name: "Street Food",
     icon: "fa-motorcycle",
     image:
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=60",
   },
+  {
+    categoryId: 16,
+    name: "Traditional",
+    icon: "fa-home",
+    image:
+      "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=500&q=60",
+  },
+  {
+    categoryId: 17,
+    name: "Vietnamese",
+    icon: "fa-leaf",
+    image:
+      "https://images.unsplash.com/photo-1503764654157-72d979d9af2f?auto=format&fit=crop&w=500&q=60",
+  },
 ];
 
 export const ARTICLE: Article[] = [];
 
-export const DISTRICTS: District[] = [  
+export const DISTRICTS: District[] = [
   {
-    districtId: "District1",
+    districtId: 1,
     name: "District 1",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District2",
+    districtId: 2,
     name: "District 2",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District3",
+    districtId: 3,
     name: "District 3",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District4",
+    districtId: 4,
     name: "District 4",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District5",
+    districtId: 5,
     name: "District 5",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District6",
+    districtId: 6,
     name: "District 6",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District7",
+    districtId: 7,
     name: "District 7",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District8",
+    districtId: 8,
     name: "District 8",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District9",
+    districtId: 9,
     name: "District 9",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District10",
+    districtId: 10,
     name: "District 10",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "District11",
+    districtId: 11,
     name: "District 11",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "BinhThanhDistrict",
+    districtId: 12,
     name: "Binh Thanh District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "TanBinhDistrict",
+    districtId: 13,
     name: "Tan Binh District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "TanPhuDistrict",
+    districtId: 14,
     name: "Tan Phu District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "GoVapDistrict",
+    districtId: 15,
     name: "Go Vap District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "PhuNhuanDistrict",
+    districtId: 16,
     name: "Phu Nhuan District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "BinhTanDistrict",
+    districtId: 17,
     name: "Binh Tan District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "ThuducCity",
+    districtId: 18,
     name: "Thu Duc City",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "DistrictBinhChanh",
+    districtId: 19,
     name: "Binh Chanh District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "HocMonDistrict",
+    districtId: 20,
     name: "Hoc Mon District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "CuChiDistrict",
+    districtId: 21,
     name: "Cu Chi District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "CanGioDistrict",
+    districtId: 22,
     name: "Can Gio District",
-    image:
-      "",
+    image: "",
   },
   {
-    districtId: "NhaBeDistrict",
+    districtId: 23,
     name: "Nha Be District",
-    image:
-      "",
+    image: "",
   },
 ];

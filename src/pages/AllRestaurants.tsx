@@ -7,173 +7,88 @@ import Footer from "../components/Footer";
 import type { Restaurant } from "../lib/types";
 import { CATEGORIES, DISTRICTS } from "../lib/constants";
 
-// Extended Interface for local mock data to support categories/price
-interface ExtendedRestaurant extends Restaurant {
-  categories: string[];
-  priceRange: string; // e.g., $$, $$$
-}
-
-// MOCK DATA (In a real app, this comes from an API with pagination params)
-const MOCK_DATA: ExtendedRestaurant[] = [
-  {
-    restaurantId: 1,
-    name: "The Deck Saigon",
-    address: "38 Nguyen U Di, Thao Dien",
-    district: "District 2",
-    picture:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60",
-    rating: 4.8,
-    openTime: "08:00",
-    closeTime: "23:00",
-    categories: ["Dinner", "Bar", "River View"],
-    priceRange: "$$$",
-  },
-  {
-    restaurantId: 2,
-    name: "Pizza 4P's Ben Thanh",
-    address: "8 Thu Khoa Huan",
-    district: "District 1",
-    picture:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=60",
-    rating: 4.9,
-    openTime: "10:00",
-    closeTime: "22:00",
-    categories: ["Dinner", "Italian", "Family"],
-    priceRange: "$$",
-  },
-  {
-    restaurantId: 3,
-    name: "Secret Garden",
-    address: "158 Pasteur",
-    district: "District 1",
-    picture:
-      "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=60",
-    rating: 4.7,
-    openTime: "07:00",
-    closeTime: "22:00",
-    categories: ["Dinner", "Traditional", "Vietnamese"],
-    priceRange: "$$",
-  },
-  {
-    restaurantId: 4,
-    name: "The Workshop Coffee",
-    address: "27 Ngo Duc Ke",
-    district: "District 1",
-    picture:
-      "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=500&q=60",
-    rating: 4.6,
-    openTime: "08:00",
-    closeTime: "21:00",
-    categories: ["Cafe", "Brunch"],
-    priceRange: "$$",
-  },
-  {
-    restaurantId: 5,
-    name: "Lush Nightclub",
-    address: "2 Ly Tu Trong",
-    district: "District 1",
-    picture:
-      "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=500&q=60",
-    rating: 4.5,
-    openTime: "21:00",
-    closeTime: "04:00",
-    categories: ["Club", "Bar", "Event"],
-    priceRange: "$$$",
-  },
-  {
-    restaurantId: 6,
-    name: "Godmother Bake & Brunch",
-    address: "Dong Khoi, Level 3",
-    district: "District 1",
-    picture:
-      "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=60",
-    rating: 4.7,
-    openTime: "08:00",
-    closeTime: "16:00",
-    categories: ["Brunch", "Cafe"],
-    priceRange: "$$",
-  },
-  {
-    restaurantId: 7,
-    name: "Noir. Dining in the Dark",
-    address: "178 Hai Ba Trung",
-    district: "District 1",
-    picture:
-      "https://images.unsplash.com/photo-1698614082118-8e6eaecb08ef?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    rating: 4.9,
-    openTime: "17:30",
-    closeTime: "23:00",
-    categories: ["Dinner", "Experience"],
-    priceRange: "$$$$",
-  },
-  {
-    restaurantId: 8,
-    name: "Propaganda Vietnamese Bistro",
-    address: "21 Han Thuyen",
-    district: "District 1",
-    picture:
-      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=60",
-    rating: 4.6,
-    openTime: "07:30",
-    closeTime: "23:00",
-    categories: ["Bistro", "Vietnamese"],
-    priceRange: "$$",
-  },
-];
-
 const AllRestaurants: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
 
-  // State
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [filterDistrict, setFilterDistrict] = useState("All");
   const [filterCategory, setFilterCategory] = useState("All");
-  const [restaurants, setRestaurants] = useState<ExtendedRestaurant[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  // Pagination State
+  const [allRestaurants, setAllRestaurants] = useState<Restaurant[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  
+  // Start loading as true
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   useEffect(() => {
-    setLoading(true);
-    // Simulate API Fetch & Filtering
-    setTimeout(() => {
-      let filtered = MOCK_DATA;
+    const fetchRestaurants = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("http://app.lemanh0902.id.vn/restaurant/");
+        const result = await response.json();
 
-      // 1. Filter by Search Term
-      if (searchTerm) {
-        const lowerTerm = searchTerm.toLowerCase();
-        filtered = filtered.filter(
-          (r) =>
-            r.name.toLowerCase().includes(lowerTerm) ||
-            r.address.toLowerCase().includes(lowerTerm)
-        );
+        if (result.data) {
+          const safeData = result.data.map((item: any) => ({
+            ...item,
+            categories: item.categories || []
+          }));
+
+          setAllRestaurants(safeData);
+          setRestaurants(safeData);
+        }
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      // 2. Filter by District
-      if (filterDistrict !== "All") {
-        filtered = filtered.filter((r) => r.district === filterDistrict);
-      }
+    fetchRestaurants();
+  }, []);
 
-      // 3. Filter by Category
-      if (filterCategory !== "All") {
-        filtered = filtered.filter((r) =>
-          r.categories.includes(filterCategory)
-        );
-      }
+  // 2. FILTER DATA
+  useEffect(() => {
+    // Always start filtering from the Master list (allRestaurants)
+    let filtered = allRestaurants;
 
-      setRestaurants(filtered);
-      setLoading(false);
-      setCurrentPage(1); // Reset to page 1 on filter change
-    }, 400);
+    // Filter by Search Term
+    if (searchTerm) {
+      const lowerTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (r) =>
+          (r.name || "").toLowerCase().includes(lowerTerm) ||
+          (r.address || "").toLowerCase().includes(lowerTerm)
+      );
+    }
 
-    // Update URL params without reloading
+    // Filter by District
+    // IMPORTANT: Ensure your DISTRICTS constant values match the API strings (e.g., "District 1")
+    if (filterDistrict !== "All") {
+      filtered = filtered.filter((r) => r.district === filterDistrict);
+    }
+
+    // Filter by Category
+    if (filterCategory !== "All") {
+      // FIX: Add ( || []) to prevent crash if categories is undefined
+      filtered = filtered.filter((r) => (r.categories || []).includes(filterCategory));
+    }
+
+    setRestaurants(filtered);
+    setCurrentPage(1);
+
     const params: any = {};
     if (searchTerm) params.search = searchTerm;
     setSearchParams(params);
-  }, [searchTerm, filterDistrict, filterCategory, setSearchParams]);
+  }, [
+    searchTerm,
+    filterDistrict,
+    filterCategory,
+    setSearchParams,
+    allRestaurants,
+  ]);
 
   // Pagination Logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -198,7 +113,6 @@ const AllRestaurants: React.FC = () => {
               </p>
             </div>
             <div className="col-md-6">
-              {/* Main Search Bar */}
               <div className="input-group input-group-lg shadow-sm">
                 <span className="input-group-text bg-white border-end-0 text-muted">
                   <i className="fa fa-search"></i>
@@ -206,7 +120,7 @@ const AllRestaurants: React.FC = () => {
                 <input
                   type="text"
                   className="form-control border-start-0"
-                  placeholder="Search by name, address, or cuisine..."
+                  placeholder="Search by name, address..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -218,29 +132,26 @@ const AllRestaurants: React.FC = () => {
 
       <div className="container py-4">
         <div className="row">
-          {/* --- SIDEBAR FILTERS (Desktop) --- */}
+          {/* --- SIDEBAR FILTERS --- */}
           <div className="col-lg-3 mb-4">
-            <div
-              className="card border-0 shadow-sm p-3 position-sticky"
-              style={{ top: "100px" }}
-            >
+            <div className="card border-0 shadow-sm p-3 position-sticky" style={{ top: "100px" }}>
               <h5 className="fw-bold mb-3">
                 <i className="fa fa-sliders me-2"></i>Filters
               </h5>
 
+              {/* District Filter */}
               <div className="mb-4">
                 <label className="form-label fw-bold small text-muted text-uppercase">
                   District
                 </label>
-
                 <select
                   className="form-select"
                   value={filterDistrict}
                   onChange={(e) => setFilterDistrict(e.target.value)}
                 >
                   <option value="All">All Districts</option>
-
                   {DISTRICTS.map((dist) => (
+                    // Make sure dist.districtId matches the API string like "District 1"
                     <option key={dist.districtId} value={dist.districtId}>
                       {dist.name}
                     </option>
@@ -248,18 +159,17 @@ const AllRestaurants: React.FC = () => {
                 </select>
               </div>
 
+              {/* Category Filter */}
               <div className="mb-4">
                 <label className="form-label fw-bold small text-muted text-uppercase">
                   Category
                 </label>
-
                 <select
                   className="form-select"
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
                 >
                   <option value="All">All Categories</option>
-
                   {CATEGORIES.map((cat) => (
                     <option key={cat.categoryId} value={cat.categoryId}>
                       {cat.name}
@@ -281,14 +191,11 @@ const AllRestaurants: React.FC = () => {
             </div>
           </div>
 
-          {/* --- RESULTS GRID --- */}
+          {/* --- RESTAURANT LIST --- */}
           <div className="col-lg-9">
             {loading ? (
               <div className="text-center py-5">
-                <div
-                  className="spinner-border text-warning"
-                  role="status"
-                ></div>
+                <div className="spinner-border text-warning" role="status"></div>
               </div>
             ) : currentItems.length > 0 ? (
               <>
@@ -297,38 +204,36 @@ const AllRestaurants: React.FC = () => {
                     <div className="col" key={restaurant.restaurantId}>
                       <div className="card h-100 border-0 shadow-sm hover-scale overflow-hidden">
                         <div className="position-relative">
+                          {/* Image fallback if picture is empty */}
                           <img
-                            src={restaurant.picture}
+                            src={restaurant.picture || "https://via.placeholder.com/300"}
                             alt={restaurant.name}
                             className="card-img-top"
                             style={{ height: "220px", objectFit: "cover" }}
+                            onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/300")}
                           />
-                          <span className="position-absolute top-0 end-0 m-2 badge bg-white text-dark shadow-sm">
-                            {restaurant.priceRange}
-                          </span>
+                          {restaurant.rating >= 4.5 && (
+                            <span className={`position-absolute top-0 end-0 m-2 badge shadow-sm ${
+                              restaurant.rating > 4.8 ? "bg-warning text-dark" : "bg-white text-dark"
+                            }`}>
+                              {restaurant.rating > 4.8 ? "Highly Recommend" : "Recommend"}
+                            </span>
+                          )}
                         </div>
                         <div className="card-body d-flex flex-column p-4">
                           <div className="d-flex justify-content-between align-items-start mb-2">
-                            <h5
-                              className="card-title fw-bold font-playfair mb-0 text-truncate"
-                              style={{ maxWidth: "75%" }}
-                            >
+                            <h5 className="card-title fw-bold font-playfair mb-0 text-truncate" style={{ maxWidth: "75%" }}>
                               {restaurant.name}
                             </h5>
                             <span className="badge bg-success">
-                              {restaurant.rating.toFixed(1)}{" "}
-                              <i className="fa fa-star ms-1"></i>
+                              {restaurant.rating?.toFixed(1)} <i className="fa fa-star ms-1"></i>
                             </span>
                           </div>
 
                           <div className="mb-2">
-                            {restaurant.categories
-                              .slice(0, 3)
-                              .map((cat, idx) => (
-                                <span
-                                  key={idx}
-                                  className="badge bg-light text-secondary me-1 border"
-                                >
+                            {/* FIX: Check if categories exist before slicing/mapping */}
+                            {(restaurant.categories || []).slice(0, 3).map((cat, idx) => (
+                                <span key={idx} className="badge bg-light text-secondary me-1 border">
                                   {cat}
                                 </span>
                               ))}
@@ -343,11 +248,7 @@ const AllRestaurants: React.FC = () => {
                           </p>
 
                           <Link
-                            to={`/booking/${
-                              restaurant.restaurantId
-                            }?restaurant_name=${encodeURIComponent(
-                              restaurant.name
-                            )}`}
+                            to={`/booking/${restaurant.restaurantId}?restaurant_name=${encodeURIComponent(restaurant.name)}`}
                             className="btn btn-outline-primary w-100 fw-bold rounded-pill"
                             style={{ borderColor: "#b2744c", color: "#b2744c" }}
                             onMouseOver={(e) => {
@@ -355,8 +256,7 @@ const AllRestaurants: React.FC = () => {
                               e.currentTarget.style.color = "white";
                             }}
                             onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor =
-                                "transparent";
+                              e.currentTarget.style.backgroundColor = "transparent";
                               e.currentTarget.style.color = "#b2744c";
                             }}
                           >
@@ -372,50 +272,24 @@ const AllRestaurants: React.FC = () => {
                 {totalPages > 1 && (
                   <nav>
                     <ul className="pagination justify-content-center">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => setCurrentPage((p) => p - 1)}
-                        >
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => setCurrentPage((p) => p - 1)}>
                           Previous
                         </button>
                       </li>
                       {[...Array(totalPages)].map((_, i) => (
-                        <li
-                          key={i}
-                          className={`page-item ${
-                            currentPage === i + 1 ? "active" : ""
-                          }`}
-                        >
+                        <li key={i} className={`page-item ${currentPage === i + 1 ? "active" : ""}`}>
                           <button
                             className="page-link"
                             onClick={() => setCurrentPage(i + 1)}
-                            style={
-                              currentPage === i + 1
-                                ? {
-                                    backgroundColor: "#b2744c",
-                                    borderColor: "#b2744c",
-                                  }
-                                : {}
-                            }
+                            style={currentPage === i + 1 ? { backgroundColor: "#b2744c", borderColor: "#b2744c" } : {}}
                           >
                             {i + 1}
                           </button>
                         </li>
                       ))}
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => setCurrentPage((p) => p + 1)}
-                        >
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => setCurrentPage((p) => p + 1)}>
                           Next
                         </button>
                       </li>
@@ -427,9 +301,7 @@ const AllRestaurants: React.FC = () => {
               <div className="text-center py-5">
                 <i className="fa fa-frown-o fa-4x text-muted mb-3 opacity-50"></i>
                 <h3>No results found</h3>
-                <p className="text-muted">
-                  Try adjusting your search or filters.
-                </p>
+                <p className="text-muted">Try adjusting your search or filters.</p>
                 <button
                   className="btn btn-link text-warning fw-bold"
                   onClick={() => {
