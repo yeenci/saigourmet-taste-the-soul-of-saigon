@@ -24,10 +24,20 @@ const AllRestaurants: React.FC = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || "/api";
+
     const fetchRestaurants = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/api/restaurant/");
+        const response = await fetch(`${apiUrl}/restaurant/`);
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await response.text();
+          console.error("Server sent HTML instead of JSON:", text);
+          return; // Stop here so app doesn't crash
+        }
+
         const result = await response.json();
 
         if (result.data) {
