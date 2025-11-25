@@ -207,8 +207,12 @@ const AllRestaurants: React.FC = () => {
             ) : currentItems.length > 0 ? (
               <>
                 <div className="row row-cols-1 row-cols-md-2 g-4 mb-5">
-                  {currentItems.map((restaurant) => (
-                    <div className="col" key={restaurant.restaurantId}>
+{/* FIX KEY WARNING: Use ID or Index fallback */}
+                  {currentItems.map((restaurant, index) => (
+                    <div 
+className="col" 
+key={restaurant.restaurantId || `rest-${index}`}
+>
                       <div className="card h-100 border-0 shadow-sm hover-scale overflow-hidden">
                         {/* Image section... */}
                         <div className="position-relative">
