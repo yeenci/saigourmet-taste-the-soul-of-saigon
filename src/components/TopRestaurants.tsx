@@ -1,60 +1,63 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { Restaurant } from "../lib/types";
 
-// Extended interface for UI display purposes (optional tags/price)
-
 const TopRestaurants: React.FC = () => {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [topRestaurants, setTopRestaurants] = useState<Restaurant[]>([]);
+  const [, setAllRestaurants] = useState<Restaurant[]>([]);
 
   useEffect(() => {
-    // Mock Data
-    const mockTop3: Restaurant[] = [
-      {
-        restaurantId: "1",
-        name: "The Deck Saigon",
-        address: "38 Nguyen U Di, Thao Dien",
-        district: "District 2",
-        picture:
-          "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
-        rating: 4.8,
-        openTime: "08:00",
-        closeTime: "23:00",
-        categories: ["Activity", "Bar"],
-      },
-      {
-        restaurantId: "2",
-        name: "Pizza 4P's Ben Thanh",
-        address: "8 Thu Khoa Huan",
-        district: "District 1",
-        picture:
-          "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
-        rating: 4.9,
-        openTime: "10:00",
-        closeTime: "22:00",
-        categories: ["Activity", "Bar"],
-      },
-      {
-        restaurantId: "3",
-        name: "Secret Garden",
-        address: "158 Pasteur",
-        district: "District 1",
-        picture:
-          "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80",
-        rating: 4.7,
-        openTime: "07:00",
-        closeTime: "22:00",
-        categories: ["Activity", "Bar"],
-      },
-    ];
-    setRestaurants(mockTop3);
+    const fetchRestaurants = async () => {
+      const cachedData = sessionStorage.getItem("restaurantsData");
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        setAllRestaurants(parsedData);
+        setTopRestaurants(
+          [...parsedData]
+            .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+            .slice(0, 3)
+        );
+        return;
+      }
+
+      const apiUrl = import.meta.env.VITE_API_URL || "/api";
+      try {
+        const response = await fetch(`${apiUrl}/restaurant/`);
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("Server returned HTML");
+          return;
+        }
+
+        const result = await response.json();
+
+        if (result.data) {
+          const safeData = result.data.map((item: any) => ({
+            ...item,
+            categories: item.categories || [],
+          }));
+
+          sessionStorage.setItem("restaurantsData", JSON.stringify(safeData));
+
+          setAllRestaurants(safeData);
+          setTopRestaurants(safeData);
+        }
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      }
+    };
+
+    fetchRestaurants();
   }, []);
 
   return (
     <div className="row row-cols-1 row-cols-md-3 g-4">
-      {restaurants.map((restaurant) => (
-        <div className="col" key={restaurant.restaurantId}>
+      {topRestaurants.map((restaurant, idx) => (
+        <div className="col" key={idx}>
           <div
             className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative"
             style={{ transition: "transform 0.3s ease, box-shadow 0.3s ease" }}

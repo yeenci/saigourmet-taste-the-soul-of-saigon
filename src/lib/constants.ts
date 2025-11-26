@@ -62,7 +62,7 @@ export const CATEGORIES: Category[] = [
     name: "Experience",
     icon: "fa-magic",
     image:
-      "https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&w=500&q=60",
+      "https://images.unsplash.com/photo-1732206048727-81dd4e6e9124?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     categoryId: 10,
