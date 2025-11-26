@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -23,14 +22,23 @@ const AllRestaurants: React.FC = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || "/api";
-
     const fetchRestaurants = async () => {
       setLoading(true);
+
+      const cachedData = sessionStorage.getItem("restaurantsData");
+      if (cachedData) {
+        console.log("Loading from cache...");
+        const parsedData = JSON.parse(cachedData);
+        setAllRestaurants(parsedData);
+        setRestaurants(parsedData);
+        setLoading(false);
+        return;
+      }
+
+      const apiUrl = import.meta.env.VITE_API_URL || "/api";
       try {
         const response = await fetch(`${apiUrl}/restaurant/`);
 
-        // Safety check for HTML response
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           console.error("Server returned HTML");
@@ -45,6 +53,8 @@ const AllRestaurants: React.FC = () => {
             categories: item.categories || [],
           }));
 
+          sessionStorage.setItem("restaurantsData", JSON.stringify(safeData));
+
           setAllRestaurants(safeData);
           setRestaurants(safeData);
         }
@@ -58,11 +68,9 @@ const AllRestaurants: React.FC = () => {
     fetchRestaurants();
   }, []);
 
-  // --- FILTER DATA ---
   useEffect(() => {
     let filtered = allRestaurants;
 
-    // 1. Filter by Search
     if (searchTerm) {
       const lowerTerm = searchTerm.toLowerCase();
       filtered = filtered.filter(
@@ -72,24 +80,26 @@ const AllRestaurants: React.FC = () => {
       );
     }
 
-    // 2. Filter by District (FIXED)
     if (filterDistrict !== "All") {
-      // The select box returns a string "1", convert to number if needed
-      // const targetId = Number(filterDistrict);
+      const selectedDistObj = DISTRICTS.find(
+        (d) => String(d.districtId) === String(filterDistrict)
+      );
 
-      filtered = filtered.filter((r) => {
-        // Access the ID inside the district object
-        return r.district?.id === filterDistrict;
-      });
+      if (selectedDistObj) {
+        filtered = filtered.filter((r) => r.district === selectedDistObj.name);
+      }
     }
 
-    // 3. Filter by Category
     if (filterCategory !== "All") {
-      filtered = filtered.filter((r) =>
-        (r.categories || []).some(
-          (cat) => String(cat.id) === String(filterCategory)
-        )
+      const selectedCatObj = CATEGORIES.find(
+        (c) => String(c.categoryId) === String(filterCategory)
       );
+
+      if (selectedCatObj) {
+        filtered = filtered.filter((r) =>
+          (r.categories || []).includes(selectedCatObj.name)
+        );
+      }
     }
 
     setRestaurants(filtered);
@@ -106,7 +116,7 @@ const AllRestaurants: React.FC = () => {
     allRestaurants,
   ]);
 
-  // Pagination
+  // Pagination Logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = restaurants.slice(indexOfFirstItem, indexOfLastItem);
@@ -116,13 +126,11 @@ const AllRestaurants: React.FC = () => {
     <div className="d-flex flex-column min-vh-100 bg-light">
       <Navbar />
 
-      {/* Header code... (omitted for brevity, keep your existing header) */}
       <div className="bg-white border-bottom shadow-sm">
         <div className="container py-5">
           <h1 className="fw-bold font-playfair display-5 mb-2">
             Find your table
           </h1>
-          {/* ... search input ... */}
           <input
             type="text"
             className="form-control border-start-0"
@@ -135,7 +143,6 @@ const AllRestaurants: React.FC = () => {
 
       <div className="container py-4">
         <div className="row">
-          {/* SIDEBAR FILTERS */}
           <div className="col-lg-3 mb-4">
             <div
               className="card border-0 shadow-sm p-3 position-sticky"
@@ -143,7 +150,6 @@ const AllRestaurants: React.FC = () => {
             >
               <h5 className="fw-bold mb-3">Filters</h5>
 
-              {/* District Filter */}
               <div className="mb-4">
                 <label className="form-label fw-bold small text-muted text-uppercase">
                   District
@@ -155,7 +161,6 @@ const AllRestaurants: React.FC = () => {
                 >
                   <option value="All">All Districts</option>
                   {DISTRICTS.map((dist) => (
-                    // Value is the ID (e.g., 1)
                     <option key={dist.districtId} value={dist.districtId}>
                       {dist.name}
                     </option>
@@ -163,7 +168,6 @@ const AllRestaurants: React.FC = () => {
                 </select>
               </div>
 
-              {/* Category Filter */}
               <div className="mb-4">
                 <label className="form-label fw-bold small text-muted text-uppercase">
                   Category
@@ -207,14 +211,12 @@ const AllRestaurants: React.FC = () => {
             ) : currentItems.length > 0 ? (
               <>
                 <div className="row row-cols-1 row-cols-md-2 g-4 mb-5">
-{/* FIX KEY WARNING: Use ID or Index fallback */}
                   {currentItems.map((restaurant, index) => (
-                    <div 
-className="col" 
-key={restaurant.restaurantId || `rest-${index}`}
->
+                    <div
+                      className="col"
+                      key={restaurant.restaurantId || `rest-${index}`}
+                    >
                       <div className="card h-100 border-0 shadow-sm hover-scale overflow-hidden">
-                        {/* Image section... */}
                         <div className="position-relative">
                           <img
                             src={
@@ -229,6 +231,22 @@ key={restaurant.restaurantId || `rest-${index}`}
                                 "https://via.placeholder.com/300")
                             }
                           />
+
+                          <div className="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between">
+                            {restaurant.rating >= 4.0 && (
+                              <span
+                                className={`position-absolute top-0 end-0 m-2 badge shadow-sm ${
+                                  restaurant.rating >= 4.5
+                                    ? "bg-warning text-dark"
+                                    : "bg-white text-dark"
+                                }`}
+                              >
+                                {restaurant.rating >= 4.5
+                                  ? "Highly Recommend"
+                                  : "Recommend"}
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         <div className="card-body d-flex flex-column p-4">
@@ -245,33 +263,39 @@ key={restaurant.restaurantId || `rest-${index}`}
                             </span>
                           </div>
 
-                          {/* Categories */}
-                          <div className="mb-2">
-                            {(restaurant.categories || [])
-                              .slice(0, 3)
-                              .map((cat, idx) => (
-                                // FIX: Use cat.id OR fallback to index (idx) to prevent key warning
-                                <span
-                                  key={cat.id || idx}
-                                  className="badge bg-light text-secondary me-1 border"
-                                >
-                                  {cat.name}
-                                </span>
-                              ))}
+                          {/* Tags */}
+                          <div className="mb-3">
+                            {restaurant.categories?.map((tag, idx) => (
+                              <span
+                                key={idx}
+                                className="badge bg-light text-secondary border me-1 fw-normal"
+                                style={{ fontSize: "0.75rem" }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
                           </div>
 
-                          {/* --- FIX IS HERE (Rendering District) --- */}
-                          <p className="text-muted small mb-1">
-                            <i className="fa fa-map-marker me-2 text-danger"></i>
-                            {/* Check if district is an object, if so, print .name */}
-                            {typeof restaurant.district === "object"
-                              ? restaurant.district.name
-                              : restaurant.district}
-                          </p>
-
-                          <p className="text-muted small mb-3 flex-grow-1">
-                            {restaurant.address}
-                          </p>
+                          <div className="text-muted small mb-3">
+                            <div className="d-flex align-items-center mb-2">
+                              <i
+                                className="fa fa-map-marker text-danger me-2"
+                                style={{ width: "15px" }}
+                              ></i>
+                              <span className="text-truncate">
+                                {restaurant.address}, {restaurant.district}
+                              </span>
+                            </div>
+                            <div className="d-flex align-items-center">
+                              <i
+                                className="fa fa-clock-o text-primary me-2"
+                                style={{ width: "15px" }}
+                              ></i>
+                              <span>
+                                {restaurant.openTime} - {restaurant.closeTime}
+                              </span>
+                            </div>
+                          </div>
 
                           <Link
                             to={`/booking/${
@@ -299,7 +323,7 @@ key={restaurant.restaurantId || `rest-${index}`}
                   ))}
                 </div>
 
-                {/* Pagination (keep your existing code) */}
+                {/* Pagination Controls */}
                 {totalPages > 1 && (
                   <nav>
                     <ul className="pagination justify-content-center">
@@ -315,7 +339,29 @@ key={restaurant.restaurantId || `rest-${index}`}
                           Previous
                         </button>
                       </li>
-                      {/* ... */}
+                      {[...Array(totalPages)].map((_, i) => (
+                        <li
+                          key={i} // Ensure this key is present here
+                          className={`page-item ${
+                            currentPage === i + 1 ? "active" : ""
+                          }`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => setCurrentPage(i + 1)}
+                            style={
+                              currentPage === i + 1
+                                ? {
+                                    backgroundColor: "#b2744c",
+                                    borderColor: "#b2744c",
+                                  }
+                                : {}
+                            }
+                          >
+                            {i + 1}
+                          </button>
+                        </li>
+                      ))}
                       <li
                         className={`page-item ${
                           currentPage === totalPages ? "disabled" : ""

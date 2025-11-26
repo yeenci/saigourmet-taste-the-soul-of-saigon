@@ -4,17 +4,13 @@ import { Link } from "react-router-dom";
 import type { Restaurant } from "../lib/types";
 
 // Extended interface for UI display purposes (optional tags/price)
-interface UIRestaurant extends Restaurant {
-  tags?: string[];
-  price?: string;
-}
 
 const TopRestaurants: React.FC = () => {
-  const [restaurants, setRestaurants] = useState<UIRestaurant[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
   useEffect(() => {
     // Mock Data
-    const mockTop3: UIRestaurant[] = [
+    const mockTop3: Restaurant[] = [
       {
         restaurantId: "1",
         name: "The Deck Saigon",
@@ -25,8 +21,7 @@ const TopRestaurants: React.FC = () => {
         rating: 4.8,
         openTime: "08:00",
         closeTime: "23:00",
-        tags: ["Riverside", "Fine Dining"],
-        price: "$$$",
+        categories: ["Activity", "Bar"],
       },
       {
         restaurantId: "2",
@@ -38,8 +33,7 @@ const TopRestaurants: React.FC = () => {
         rating: 4.9,
         openTime: "10:00",
         closeTime: "22:00",
-        tags: ["Italian", "Family"],
-        price: "$$",
+        categories: ["Activity", "Bar"],
       },
       {
         restaurantId: "3",
@@ -51,8 +45,7 @@ const TopRestaurants: React.FC = () => {
         rating: 4.7,
         openTime: "07:00",
         closeTime: "22:00",
-        tags: ["Vietnamese", "Rooftop"],
-        price: "$$",
+        categories: ["Activity", "Bar"],
       },
     ];
     setRestaurants(mockTop3);
@@ -94,12 +87,19 @@ const TopRestaurants: React.FC = () => {
               />
               {/* Overlay Badges */}
               <div className="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between">
-                <span className="badge bg-warning text-dark shadow-sm">
-                  Recommended
-                </span>
-                <span className="badge bg-light text-dark shadow-sm">
-                  {restaurant.price}
-                </span>
+                {restaurant.rating >= 4.0 && (
+                  <span
+                    className={`position-absolute top-0 end-0 m-2 badge shadow-sm ${
+                      restaurant.rating >= 4.5
+                        ? "bg-warning text-dark"
+                        : "bg-white text-dark"
+                    }`}
+                  >
+                    {restaurant.rating >= 4.5
+                      ? "Highly Recommend"
+                      : "Recommend"}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -123,7 +123,7 @@ const TopRestaurants: React.FC = () => {
 
               {/* Tags */}
               <div className="mb-3">
-                {restaurant.tags?.map((tag, idx) => (
+                {restaurant.categories?.map((tag, idx) => (
                   <span
                     key={idx}
                     className="badge bg-light text-secondary border me-1 fw-normal"

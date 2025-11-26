@@ -23,12 +23,12 @@ export interface Restaurant {
   restaurantId: string;
   name: string;
   address: string;
-  district: { id: string; name: string };
+  district: string;
   picture: string;
   rating: number;
   openTime: string;
   closeTime: string;
-  categories: { id: string; name: string }[];
+  categories: string[];
 }
 
 export interface Booking {
