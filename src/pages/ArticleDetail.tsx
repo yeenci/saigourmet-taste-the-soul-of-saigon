@@ -16,7 +16,6 @@ const calculateReadTime = (content: string): string => {
 const ArticleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  // Using 'any' for initial state to handle the extra 'readTime' field flexible
   const [article, setArticle] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +29,6 @@ const ArticleDetail: React.FC = () => {
         try {
           const parsedData = JSON.parse(cachedData);
           if (Array.isArray(parsedData)) {
-            // Find article by matching ID (handle string vs number comparison)
             const foundArticle = parsedData.find(
               (item: any) =>
                 String(item.articleId) === String(id) ||
@@ -38,8 +36,6 @@ const ArticleDetail: React.FC = () => {
             );
 
             if (foundArticle) {
-              console.log("Article found in cache");
-              // Ensure readTime is present (in case cache is old)
               const readTime =
                 foundArticle.readTime ||
                 calculateReadTime(foundArticle.content);
@@ -53,15 +49,11 @@ const ArticleDetail: React.FC = () => {
         }
       }
 
-      // 2. API Fallback (if not in cache or direct link access)
+      // 2. API Fallback
       const apiUrl = import.meta.env.VITE_API_URL || "/api";
       try {
-        console.log("Fetching from API...");
-        // We fetch the list to ensure consistent data structure mapping
-        // (Or you could fetch `${apiUrl}/blog/${id}` if your API supports it directly)
-        const response = await fetch(`${apiUrl}/blog/`);
+        const response = await fetch(`${apiUrl}/article/`);
         const result = await response.json();
-
         const dataArray = Array.isArray(result) ? result : result.data;
 
         if (Array.isArray(dataArray)) {
@@ -72,8 +64,7 @@ const ArticleDetail: React.FC = () => {
           );
 
           if (foundItem) {
-            // Map fields to ensure consistency
-            const normalizedArticle = {
+            setArticle({
               articleId: foundItem.id || foundItem.articleId,
               title: foundItem.title,
               image: foundItem.image,
@@ -81,10 +72,9 @@ const ArticleDetail: React.FC = () => {
               date: foundItem.date,
               category: foundItem.category,
               readTime: calculateReadTime(foundItem.content),
-            };
-            setArticle(normalizedArticle);
+            });
           } else {
-            setArticle(null); // Not found
+            setArticle(null);
           }
         }
       } catch (error) {
@@ -94,53 +84,47 @@ const ArticleDetail: React.FC = () => {
       }
     };
 
-    if (id) {
-      fetchArticleData();
-    }
+    if (id) fetchArticleData();
   }, [id]);
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="d-flex flex-column min-vh-100">
-        <Navbar />
-        <div className="flex-grow-1 d-flex justify-content-center align-items-center">
-          <div className="spinner-border text-warning" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-        <Footer />
+      <div className="text-center mt-5">
+        <div className="spinner-border text-warning"></div>
       </div>
     );
-  }
 
   if (!article) {
     return (
-      <div className="d-flex flex-column min-vh-100">
-        <Navbar />
-        <div className="flex-grow-1 container text-center d-flex flex-column justify-content-center">
-          <h2 className="display-6 fw-bold">Article Not Found</h2>
-          <p className="text-muted">
-            The story you are looking for does not exist or has been moved.
-          </p>
-          <div>
-            <button
-              className="btn btn-primary mt-3 px-4 py-2"
-              onClick={() => navigate("/blogs")}
-            >
-              Back to Blogs
-            </button>
-          </div>
-        </div>
-        <Footer />
+      <div className="text-center mt-5 container">
+        <h2>Article Not Found</h2>
+        <button
+          className="btn btn-primary mt-3"
+          onClick={() => navigate("/blogs")}
+        >
+          Back to Blogs
+        </button>
       </div>
     );
   }
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-white">
+      <style>{`
+        .custom-link {
+          text-decoration: none;
+          font-weight: 400;  /* Regular weight */
+          color: #6c757d;    /* Bootstrap text-muted color */
+          transition: color 0.2s;
+        }
+        .custom-link:hover {
+          text-decoration: underline; /* Underline on hover */
+          color: #000; /* Darken color on hover */
+        }
+      `}</style>
+
       <Navbar />
 
-      {/* Hero Image Section */}
       <div
         className="position-relative w-100"
         style={{
@@ -152,44 +136,40 @@ const ArticleDetail: React.FC = () => {
         }}
       >
         <div className="container h-100 d-flex flex-column justify-content-end pb-5">
-          <span className="badge bg-warning text-dark mb-2 align-self-start fs-6">
+          <span className="badge bg-warning text-dark mb-2 align-self-start">
             {article.category || "Food Guide"}
           </span>
           <h1 className="display-4 text-white fw-bold">{article.title}</h1>
-          <div className="text-white opacity-75 mt-2 d-flex align-items-center flex-wrap">
-            <i className="fa fa-user me-2"></i> By SaiGourmet Team
-            <span className="mx-2">&bull;</span>
-            <i className="fa fa-calendar me-2"></i>{" "}
-            {article.date || "Nov 24, 2025"}
-            <span className="mx-2">&bull;</span>
-            <i className="fa fa-clock-o me-2"></i> {article.readTime}
+          <div className="text-white opacity-75 mt-2">
+            <i className="fa fa-user me-2"></i> By SaiGourmet Team &bull;{" "}
+            <i className="fa fa-calendar ms-2 me-2"></i>{" "}
+            {article.date || "Nov 24, 2025"} &bull;{" "}
+            <i className="fa fa-clock-o ms-2 me-2"></i> {article.readTime}
           </div>
         </div>
       </div>
 
       <div className="container py-5" style={{ maxWidth: "800px" }}>
-        {/* Navigation Breadcrumb */}
+        {/* Breadcrumbs */}
         <nav aria-label="breadcrumb" className="mb-4">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <Link to="/" className="text-decoration-none text-muted">
+              <Link to="/" className="custom-link">
                 Home
               </Link>
             </li>
             <li className="breadcrumb-item">
-              <Link to="/blogs" className="text-decoration-none text-muted">
+              <Link to="/blogs" className="custom-link">
                 Blogs
               </Link>
             </li>
-            <li className="breadcrumb-item active" aria-current="page">
+            <li className="breadcrumb-item active fw-bold" aria-current="page">
               {article.title}
             </li>
           </ol>
         </nav>
 
-        {/* Article Content */}
         <article className="blog-post">
-          {/* Render paragraphs nicely by splitting newlines */}
           {article.content &&
             article.content.split("\n").map(
               (paragraph: string, index: number) =>
@@ -207,7 +187,6 @@ const ArticleDetail: React.FC = () => {
 
         <hr className="my-5" />
 
-        {/* Author / Share Section */}
         <div className="d-flex justify-content-between align-items-center bg-light p-4 rounded">
           <div>
             <h5 className="fw-bold mb-1">Share this article</h5>
