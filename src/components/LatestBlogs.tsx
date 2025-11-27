@@ -3,20 +3,13 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { Article } from "../lib/types";
 
-// Extended interface for UI display purposes
-interface UIArticle extends Article {
-  date?: string;
-  category?: string;
-  readTime?: string;
-}
-
 const LatestBlogs: React.FC = () => {
-  const [articles, setArticles] = useState<UIArticle[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
-    const mockArticles: UIArticle[] = [
+    const mockArticles: Article[] = [
       {
-        articleId: 101,
+        articleId: "101",
         title: "Top 5 Hidden Coffee Spots in D1",
         image:
           "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=800&q=80",
@@ -24,10 +17,9 @@ const LatestBlogs: React.FC = () => {
           "Discover the quiet corners of Saigon's bustling District 1 where coffee culture thrives...",
         date: "Nov 20, 2025",
         category: "Guide",
-        readTime: "5 min read",
       },
       {
-        articleId: 102,
+        articleId: "102",
         title: "A Guide to Saigon Street Food",
         image:
           "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
@@ -38,7 +30,7 @@ const LatestBlogs: React.FC = () => {
         readTime: "8 min read",
       },
       {
-        articleId: 103,
+        articleId: "103",
         title: "Best Rooftop Bars for Sunset",
         image:
           "https://plus.unsplash.com/premium_photo-1736238795669-d8a908d893fa?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",

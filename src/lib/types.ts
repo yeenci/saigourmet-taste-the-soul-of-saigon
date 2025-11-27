@@ -41,10 +41,13 @@ export interface Booking {
 }
 
 export interface Article {
-  articleId: number;
+  articleId: string;
   title: string;
   image: string;
   content: string;
+  date: string;
+  category: string;
+  readTime?: string;
 }
 
 export interface Category {
@@ -70,10 +73,3 @@ export interface District {
 //   openTime: string;
 //   closeTime: string;
 // }
-
-export interface Article {
-  articleId: number;
-  title: string;
-  image: string;
-  content: string;
-}

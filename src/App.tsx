@@ -16,7 +16,7 @@ import CreateRestaurant from "./pages/Admin/CreateRestaurant";
 import UserProfile from "./pages/User/UserProfile";
 import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
-import Blogs from "./pages/Blogs";
+import Blogs from "./pages/AllBlogs";
 import ArticleDetail from "./pages/ArticleDetail";
 import CategoryPage from "./pages/CategoryPage";
 import AllCategories from "./pages/AllCategories";
@@ -51,7 +51,7 @@ const App: React.FC = () => {
         <Route path="/category/:id" element={<CategoryPage />} />
 
         <Route path="/blogs" element={<Blogs />} />
-        <Route path="/article/:id" element={<ArticleDetail />} />
+        <Route path="/blog/:id" element={<ArticleDetail />} />
 
         <Route path="/profile" element={<UserProfile />} />
 
