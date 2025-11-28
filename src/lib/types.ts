@@ -1,13 +1,3 @@
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  fullName?: string;
-  phoneNumber?: string;
-  address?: string;
-  profilePictureUrl?: string;
-}
-
 export interface UserProfileData {
   userId: number;
   username: string;
@@ -63,13 +53,18 @@ export interface District {
   image: string;
 }
 
-// export interface Restaurant {
-//   restaurantId: string;
-//   name: string;
-//   address: string;
-//   district: string;
-//   picture: string;
-//   rating: number;
-//   openTime: string;
-//   closeTime: string;
-// }
+export interface User {
+  id: string;
+  email: string;
+  phoneNumber?: string;
+  address?: string;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (token: string) => Promise<void>;
+  logout: () => void;
+}

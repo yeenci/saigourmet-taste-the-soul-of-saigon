@@ -7,6 +7,10 @@
     {
       "source": "/api/restaurant",
       "destination": "http://app.lemanh0902.id.vn/restaurant/"
+    },
+    {
+      "source": "/api/:match*",
+      "destination": "http://app.lemanh0902.id.vn/:match*"
     }
   ]
 }
