@@ -35,35 +35,46 @@ const AllRestaurants: React.FC = () => {
         return;
       }
 
-      // const apiUrl = import.meta.env.VITE_API_URL || "/api";
+      let rawResult: any = null;
+
       try {
-        // const response = await fetch(`${apiUrl}/restaurant/`);
-        const response = await fetch("https://app.lemanh0902.id.vn/restaurant/");
+        console.log("Fetching https...");
+        const response = await fetch(
+          "https://app.lemanh0902.id.vn:2025/restaurants"
+        );
+        if (!response.ok) throw new Error("Direct link error");
+        rawResult = await response.json();
+      } catch (e) {
+        console.warn(
+          "Direct fetch failed (likely unsafe/SSL error). Switching to fallback..."
+        );
 
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error("Server returned HTML");
-          return;
+        try {
+          const apiUrl = import.meta.env.VITA_API_URL || "/api";
+          const response = await fetch(`${apiUrl}/restaurant`);
+          if (!response.ok) throw new Error("Fallback link error");
+          rawResult = await response.json();
+        } catch (fE) {
+          console.error("Both fetch attempts failed:", fE);
         }
-
-        const result = await response.json();
-
-        if (result.data) {
-          const safeData = result.data.map((item: any) => ({
-            ...item,
-            categories: item.categories || [],
-          }));
-
-          sessionStorage.setItem("restaurantsData", JSON.stringify(safeData));
-
-          setAllRestaurants(safeData);
-          setRestaurants(safeData);
-        }
-      } catch (error) {
-        console.error("Error fetching restaurants:", error);
-      } finally {
-        setLoading(false);
       }
+
+      if (rawResult) {
+        const dataArray = Array.isArray(rawResult)
+          ? rawResult
+          : rawResult.data || [];
+
+        const safeData = dataArray.map((item: any) => ({
+          ...item,
+          categories: item.categories || [],
+        }));
+
+        sessionStorage.setItem("restaurantData", JSON.stringify(safeData));
+        setAllRestaurants(safeData);
+        setRestaurants(safeData);
+      }
+
+      setLoading(false);
     };
 
     fetchRestaurants();
