@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useCallback,
+  useContext,
+  useEffect,
   useRef,
   useState,
   type ReactNode,
@@ -55,7 +58,82 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const calculateRemainTime = (token: string) => {
     const decoded = parseJwt(token);
-  }
+    if (!decoded || !decoded.exp) return 0;
+    const adjExpirationTime = decoded.exp * 1000;
+    const remainingDuration = adjExpirationTime - Date.now();
+    return remainingDuration;
+  };
 
-  return <></>;
+  // fetch user profile
+  const fetchUser = async (authToken: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/me`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      } else {
+        logout();
+      }
+    } catch (e) {
+      console.error("Error fetching user: ", e);
+      logout();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Login
+  const login = async (newToken: string) => {
+    localStorage.setItem("token", newToken);
+    setToken(newToken);
+
+    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+
+    const remainingTime = calculateRemainTime(newToken);
+    logoutTimerRef.current = setTimeout(logout, remainingTime);
+
+    await fetchUser(newToken);
+  };
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      const remainingTime = calculateRemainTime(storedToken);
+
+      if (remainingTime <= 6000) {
+        logout();
+        setIsLoading(false);
+      } else {
+        setToken(storedToken);
+
+        if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+
+        logoutTimerRef.current = setTimeout(logout, remainingTime);
+        fetchUser(storedToken);
+      }
+    } else {
+      setIsLoading(false);
+    }
+
+    return () => {
+      if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+    };
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{ user, token, isAuthenticated: !!user, isLoading, login, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  return context;
 };
