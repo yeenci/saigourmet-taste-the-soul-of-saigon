@@ -5,7 +5,7 @@ import type { Article, Restaurant } from "./types";
 export const fetchRestaurantsData = async (): Promise<Restaurant[] | null> => {
   const catchedData = sessionStorage.getItem("restaurantsData");
   if (catchedData) {
-    console.log("Loading from cache...");
+    console.log("Loading restaurants from cache...");
     return JSON.parse(catchedData);
   }
 
@@ -52,7 +52,7 @@ export const fetchRestaurantsData = async (): Promise<Restaurant[] | null> => {
       categories: item.categories || [],
     }));
 
-    sessionStorage.setItem("restaurantData", JSON.stringify(safeData));
+    sessionStorage.setItem("restaurantsData", JSON.stringify(safeData));
 
     return safeData;
   }
@@ -74,7 +74,7 @@ const calculateReadTime = (content: string): string => {
 export const fetchArticlesData = async (): Promise<Article[] | null> => {
   const catchedData = sessionStorage.getItem("articlesData");
   if (catchedData) {
-    console.log("Loading from cache...");
+    console.log("Loading articles from cache...");
     return JSON.parse(catchedData);
   }
 
@@ -126,4 +126,28 @@ export const fetchArticlesData = async (): Promise<Article[] | null> => {
   }
 
   return null;
+};
+
+export const apiRequest = async (
+  endpoint: string,
+  options?: RequestInit
+): Promise<Response> => {
+  const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+
+  try {
+    // Attempt 1: Direct Port 2025
+    const res = await fetch(
+      `https://app.lemanh0902.id.vn:2025${path}`,
+      options
+    );
+    return res;
+  } catch (err) {
+    console.warn(
+      `Direct fetch failed for ${path}. Retrying with fallback...`,
+      err
+    );
+    // Attempt 2: Fallback (Proxy/Env)
+    const apiUrl = import.meta.env.VITE_API_URL || "/api";
+    return fetch(`${apiUrl}${path}`, options);
+  }
 };

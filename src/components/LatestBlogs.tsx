@@ -44,8 +44,8 @@ const LatestBlogs: React.FC = () => {
 
   return (
     <div className="row g-4">
-      {articles.map((article) => (
-        <div className="col-md-4" key={article.articleId}>
+      {articles.map((article, index) => (
+        <div className="col-md-4" key={article.articleId || `blog-${index}`}>
           <div
             className="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative"
             style={{ transition: "transform 0.3s ease, box-shadow 0.3s ease" }}

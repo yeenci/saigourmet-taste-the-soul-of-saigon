@@ -22,12 +22,16 @@ export interface Restaurant {
 }
 
 export interface Booking {
-  bookingId: number;
-  restaurantName: string;
-  customerName: string;
-  date: string;
-  guests: number;
-  status: "PENDING" | "ACCEPTED" | "DENIED" | "POSTPONED";
+  booking_id: string;
+  restaurant_id: string;
+  user_id: string;
+  name: string;
+  email: string;
+  phone: string;
+  time: string;
+  num_of_guests: number;
+  note: string;
+  booking_status: "PENDING" | "ACCEPTED" | "DENIED" | "POSTPONED";
 }
 
 export interface Article {
@@ -56,8 +60,8 @@ export interface District {
 export interface User {
   id: string;
   email: string;
-  phoneNumber?: string;
-  address?: string;
+  phoneNumber: string;
+  address: string;
 }
 
 export interface AuthContextType {
