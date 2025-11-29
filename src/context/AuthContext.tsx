@@ -10,11 +10,11 @@ import {
   type ReactNode,
 } from "react";
 import type { AuthContextType, User } from "../lib/types";
+import { apiRequest } from "../lib/utils";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
-
+// Helper to decode JWT
 const parseJwt = (token: string) => {
   try {
     const base64Url = token.split(".")[1];
@@ -64,22 +64,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     return remainingDuration;
   };
 
-  // fetch user profile
+  // fetch user profile using apiRequest helper
   const fetchUser = async (authToken: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/user/me`, {
+      const response = await apiRequest("/user/me", {
         headers: { Authorization: `Bearer ${authToken}` },
       });
 
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData);
+        setUser({
+          id: userData.id,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+          address: userData.address,
+        });
       } else {
         logout();
       }
     } catch (e) {
       console.error("Error fetching user: ", e);
-      logout();
     } finally {
       setIsLoading(false);
     }
