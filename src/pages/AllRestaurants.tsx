@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import type { Restaurant } from "../lib/types";
 import { CATEGORIES, DISTRICTS } from "../lib/constants";
+import { fetchRestaurantsData } from "../lib/utils";
 
 const AllRestaurants: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,72 +16,26 @@ const AllRestaurants: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState("All");
 
   const [allRestaurants, setAllRestaurants] = useState<Restaurant[]>([]);
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
+    const loadData = async () => {
       setLoading(true);
+      const data = await fetchRestaurantsData();
 
-      const cachedData = sessionStorage.getItem("restaurantsData");
-      if (cachedData) {
-        console.log("Loading from cache...");
-        const parsedData = JSON.parse(cachedData);
-        setAllRestaurants(parsedData);
-        setRestaurants(parsedData);
-        setLoading(false);
-        return;
-      }
-
-      let rawResult: any = null;
-
-      try {
-        console.log("Fetching https...");
-        const response = await fetch(
-          "https://app.lemanh0902.id.vn:2025/restaurants"
-        );
-        if (!response.ok) throw new Error("Direct link error");
-        rawResult = await response.json();
-      } catch (e) {
-        console.warn(
-          "Direct fetch failed (likely unsafe/SSL error). Switching to fallback..."
-        );
-
-        try {
-          const apiUrl = import.meta.env.VITA_API_URL || "/api";
-          const response = await fetch(`${apiUrl}/restaurant`);
-          if (!response.ok) throw new Error("Fallback link error");
-          rawResult = await response.json();
-        } catch (fE) {
-          console.error("Both fetch attempts failed:", fE);
-        }
-      }
-
-      if (rawResult) {
-        const dataArray = Array.isArray(rawResult)
-          ? rawResult
-          : rawResult.data || [];
-
-        const safeData = dataArray.map((item: any) => ({
-          ...item,
-          categories: item.categories || [],
-        }));
-
-        sessionStorage.setItem("restaurantData", JSON.stringify(safeData));
-        setAllRestaurants(safeData);
-        setRestaurants(safeData);
+      if (data) {
+        setAllRestaurants(data);
       }
 
       setLoading(false);
     };
-
-    fetchRestaurants();
+    loadData();
   }, []);
 
-  useEffect(() => {
+  const restaurants = useMemo(() => {
     let filtered = allRestaurants;
 
     if (searchTerm) {
@@ -98,7 +53,7 @@ const AllRestaurants: React.FC = () => {
       );
 
       if (selectedDistObj) {
-        filtered = filtered.filter((r) => r.district === selectedDistObj.name);
+        filtered.filter((r) => r.district === selectedDistObj.name);
       }
     }
 
@@ -114,19 +69,40 @@ const AllRestaurants: React.FC = () => {
       }
     }
 
-    setRestaurants(filtered);
-    setCurrentPage(1);
+    return filtered;
+  }, [searchTerm, filterDistrict, filterCategory, allRestaurants]);
 
+  // Handle Search Input
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset page immediately
+  };
+
+  // Handle District Filter
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterDistrict(e.target.value);
+    setCurrentPage(1); // Reset page immediately
+  };
+
+  // Handle Category Filter
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterCategory(e.target.value);
+    setCurrentPage(1); // Reset page immediately
+  };
+
+  // Handle Reset Button
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setFilterDistrict("All");
+    setFilterCategory("All");
+    setCurrentPage(1); // Reset page immediately
+  };
+
+  useEffect(() => {
     const params: any = {};
     if (searchTerm) params.search = searchTerm;
     setSearchParams(params);
-  }, [
-    searchTerm,
-    filterDistrict,
-    filterCategory,
-    setSearchParams,
-    allRestaurants,
-  ]);
+  }, [searchTerm, filterCategory, filterDistrict, setSearchParams]);
 
   // Pagination Logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -148,7 +124,7 @@ const AllRestaurants: React.FC = () => {
             className="form-control border-start-0"
             placeholder="Search..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
@@ -169,7 +145,7 @@ const AllRestaurants: React.FC = () => {
                 <select
                   className="form-select"
                   value={filterDistrict}
-                  onChange={(e) => setFilterDistrict(e.target.value)}
+                  onChange={handleDistrictChange}
                 >
                   <option value="All">All Districts</option>
                   {DISTRICTS.map((dist) => (
@@ -187,7 +163,7 @@ const AllRestaurants: React.FC = () => {
                 <select
                   className="form-select"
                   value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
+                  onChange={handleCategoryChange}
                 >
                   <option value="All">All Categories</option>
                   {CATEGORIES.map((cat) => (
@@ -200,11 +176,7 @@ const AllRestaurants: React.FC = () => {
 
               <button
                 className="btn btn-outline-secondary w-100 btn-sm"
-                onClick={() => {
-                  setSearchTerm("");
-                  setFilterDistrict("All");
-                  setFilterCategory("All");
-                }}
+                onClick={handleResetFilters}
               >
                 Reset Filters
               </button>

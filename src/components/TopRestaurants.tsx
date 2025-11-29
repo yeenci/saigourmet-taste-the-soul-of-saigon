@@ -4,55 +4,25 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { Restaurant } from "../lib/types";
+import { fetchRestaurantsData } from "../lib/utils";
 
 const TopRestaurants: React.FC = () => {
   const [topRestaurants, setTopRestaurants] = useState<Restaurant[]>([]);
-  const [, setAllRestaurants] = useState<Restaurant[]>([]);
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
-      const cachedData = sessionStorage.getItem("restaurantsData");
-      if (cachedData) {
-        const parsedData = JSON.parse(cachedData);
-        setAllRestaurants(parsedData);
-        setTopRestaurants(
-          [...parsedData]
-            .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-            .slice(0, 3)
-        );
-        return;
-      }
+    const loadData = async () => {
+      const data = await fetchRestaurantsData();
 
-      const apiUrl = import.meta.env.VITE_API_URL || "/api";
-      try {
-        const response = await fetch(`${apiUrl}/restaurant/`);
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error("Server returned HTML");
-          return;
-        }
-
-        const result = await response.json();
-
-        if (result.data) {
-          const safeData = result.data.map((item: any) => ({
-            ...item,
-            categories: item.categories || [],
-          }));
-
-          sessionStorage.setItem("restaurantsData", JSON.stringify(safeData));
-
-          setAllRestaurants(safeData);
-          setTopRestaurants(safeData);
-        }
-      } catch (error) {
-        console.error("Error fetching restaurants:", error);
+      if (data) {
+        const top3 = [...data]
+          .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+          .slice(0, 3);
+        setTopRestaurants(top3);
       }
     };
 
-    fetchRestaurants();
-  }, []);
+    loadData();
+  });
 
   return (
     <div className="row row-cols-1 row-cols-md-3 g-4">
