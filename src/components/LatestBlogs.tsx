@@ -2,47 +2,45 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { Article } from "../lib/types";
+import { fetchArticlesData } from "../lib/utils";
 
 const LatestBlogs: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const mockArticles: Article[] = [
-      {
-        articleId: "101",
-        title: "Top 5 Hidden Coffee Spots in D1",
-        image:
-          "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=800&q=80",
-        content:
-          "Discover the quiet corners of Saigon's bustling District 1 where coffee culture thrives...",
-        date: "Nov 20, 2025",
-        category: "Guide",
-      },
-      {
-        articleId: "102",
-        title: "A Guide to Saigon Street Food",
-        image:
-          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
-        content:
-          "From Banh Mi to Pho, explore the culinary heritage of Vietnam through its streets...",
-        date: "Nov 18, 2025",
-        category: "Food Culture",
-        readTime: "8 min read",
-      },
-      {
-        articleId: "103",
-        title: "Best Rooftop Bars for Sunset",
-        image:
-          "https://plus.unsplash.com/premium_photo-1736238795669-d8a908d893fa?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        content:
-          "Catch the golden hour at these spectacular rooftop venues overlooking the skyline...",
-        date: "Nov 15, 2025",
-        category: "Nightlife",
-        readTime: "6 min read",
-      },
-    ];
-    setArticles(mockArticles);
+    const loadData = async () => {
+      setLoading(true);
+
+      const data = await fetchArticlesData();
+
+      if (data) {
+        const sortedLatest = [...data]
+          .sort((a, b) => {
+            // Robust date parsing
+            const dateA = a.date ? new Date(a.date).getTime() : 0;
+            const dateB = b.date ? new Date(b.date).getTime() : 0;
+            return dateB - dateA;
+          })
+          .slice(0, 3);
+
+        setArticles(sortedLatest);
+      }
+      setLoading(false);
+    };
+
+    loadData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-warning" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="row g-4">
@@ -79,7 +77,10 @@ const LatestBlogs: React.FC = () => {
                 }
               />
               {/* Category Badge */}
-              <span className="position-absolute top-0 start-0 m-3 badge bg-white text-dark shadow-sm text-uppercase fw-bold ls-1" style={{fontSize: '0.7rem'}}>
+              <span
+                className="position-absolute top-0 start-0 m-3 badge bg-white text-dark shadow-sm text-uppercase fw-bold ls-1"
+                style={{ fontSize: "0.7rem" }}
+              >
                 {article.category}
               </span>
             </div>

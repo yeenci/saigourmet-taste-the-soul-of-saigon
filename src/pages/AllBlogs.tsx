@@ -4,16 +4,17 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { fetchArticlesData } from "../lib/utils";
 
 // Helper function to calculate read time
 const calculateReadTime = (content: string): string => {
   if (!content) return "1 min read";
-  
+
   // Split by regex \s+ to handle spaces, tabs, and newlines
   const words = content.trim().split(/\s+/).length;
   const wordsPerMinute = 200; // Average reading speed
   const minutes = Math.ceil(words / wordsPerMinute);
-  
+
   return `${minutes} min read`;
 };
 
@@ -26,71 +27,17 @@ const Blogs: React.FC = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchArticles = async () => {
+    const loadData = async () => {
       setLoading(true);
+      const data = await fetchArticlesData();
 
-      // 1. Check Cache
-      const cachedData = sessionStorage.getItem("articlesData");
-      if (cachedData) {
-        try {
-          const parsedData = JSON.parse(cachedData);
-          if (Array.isArray(parsedData) && parsedData.length > 0) {
-            console.log("Loading from cache...");
-            setAllArticles(parsedData);
-            setLoading(false);
-            return;
-          }
-        } catch (e) {
-          console.error("Cache parsing error", e);
-          sessionStorage.removeItem("articlesData");
-        }
+      if (data) {
+        setAllArticles(data);
       }
 
-      // 2. Fetch from API
-      const apiUrl = import.meta.env.VITE_API_URL || "/api";
-      try {
-        const response = await fetch(`${apiUrl}/article/`);
-        
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error("Server returned HTML or non-JSON content");
-          return;
-        }
-
-        const result = await response.json();
-        const dataArray = Array.isArray(result) ? result : result.data;
-
-        if (Array.isArray(dataArray)) {
-          // Map API fields and Calculate Read Time
-          const safeData = dataArray.map((item: any) => ({
-            articleId: item.id || item.articleId,
-            title: item.title,
-            image: item.image,
-            content: item.content,
-            date: item.date,
-            category: item.category,
-            // Calculate and store read time here
-            readTime: calculateReadTime(item.content || ""), 
-          }));
-
-          try {
-            sessionStorage.setItem("articlesData", JSON.stringify(safeData));
-          } catch (storageError) {
-            console.error("Failed to save to SessionStorage:", storageError);
-          }
-
-          setAllArticles(safeData);
-        } else {
-          console.warn("API response is not an array:", result);
-        }
-      } catch (error) {
-        console.error("Error fetching articles:", error);
-      } finally {
-        setLoading(false);
-      }
+      setLoading(false);
     };
-
-    fetchArticles();
+    loadData();
   }, []);
 
   // --- Pagination Logic ---
@@ -175,11 +122,9 @@ const Blogs: React.FC = () => {
                           <span className="badge bg-light text-dark border me-2">
                             {article.category || "General"}
                           </span>
-                          
+
                           {/* Date */}
-                          <small className="text-muted">
-                             {article.date}
-                          </small>
+                          <small className="text-muted">{article.date}</small>
 
                           {/* Bullet Separator */}
                           <span className="text-muted mx-2">•</span>
@@ -232,7 +177,11 @@ const Blogs: React.FC = () => {
               <div className="d-flex justify-content-center mt-5">
                 <nav aria-label="Page navigation">
                   <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                    <li
+                      className={`page-item ${
+                        currentPage === 1 ? "disabled" : ""
+                      }`}
+                    >
                       <button
                         className="page-link"
                         onClick={() => handlePageChange(currentPage - 1)}
