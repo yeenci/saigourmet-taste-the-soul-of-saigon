@@ -60,6 +60,17 @@ export const fetchRestaurantsData = async (): Promise<Restaurant[] | null> => {
   return null;
 };
 
+const calculateReadTime = (content: string): string => {
+  if (!content) return "~1 min read";
+
+  // Split by regex \s+ to handle spaces, tabs, and newlines
+  const words = content.trim().split(/\s+/).length;
+  const wordsPerMinute = 200; // Average reading speed
+  const minutes = Math.ceil(words / wordsPerMinute);
+
+  return `${minutes} min read`;
+};
+
 export const fetchArticlesData = async (): Promise<Article[] | null> => {
   const catchedData = sessionStorage.getItem("articlesData");
   if (catchedData) {
@@ -71,9 +82,7 @@ export const fetchArticlesData = async (): Promise<Article[] | null> => {
 
   try {
     console.log("Fetching https...");
-    const response = await fetch(
-      "https://app.lemanh0902.id.vn:2025/article/"
-    );
+    const response = await fetch("https://app.lemanh0902.id.vn:2025/article/");
     if (!response.ok) throw new Error("Direct link error");
 
     const contentType = response.headers.get("content-type");
@@ -107,7 +116,8 @@ export const fetchArticlesData = async (): Promise<Article[] | null> => {
 
     const safeData = dataArray.map((item: any) => ({
       ...item,
-      categories: item.categories || [],
+      category: item.category || [],
+      readTime: calculateReadTime(item.content || ""),
     }));
 
     sessionStorage.setItem("articlesData", JSON.stringify(safeData));

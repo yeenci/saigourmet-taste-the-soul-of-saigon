@@ -6,18 +6,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { fetchArticlesData } from "../lib/utils";
 
-// Helper function to calculate read time
-const calculateReadTime = (content: string): string => {
-  if (!content) return "1 min read";
-
-  // Split by regex \s+ to handle spaces, tabs, and newlines
-  const words = content.trim().split(/\s+/).length;
-  const wordsPerMinute = 200; // Average reading speed
-  const minutes = Math.ceil(words / wordsPerMinute);
-
-  return `${minutes} min read`;
-};
-
 const Blogs: React.FC = () => {
   const [allArticles, setAllArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
