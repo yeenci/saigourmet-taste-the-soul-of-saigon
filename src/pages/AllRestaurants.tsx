@@ -35,9 +35,10 @@ const AllRestaurants: React.FC = () => {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "/api";
+      // const apiUrl = import.meta.env.VITE_API_URL || "/api";
       try {
-        const response = await fetch(`${apiUrl}/restaurant/`);
+        // const response = await fetch(`${apiUrl}/restaurant/`);
+        const response = await fetch("https://app.lemanh0902.id.vn/restaurant/");
 
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
