@@ -1,274 +1,320 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import type { UserProfileData } from "../../lib/types";
+import { useAuth } from "../../context/AuthContext";
+import { apiRequest } from "../../lib/utils";
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
+  const { user, token, logout, isLoading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
 
-  const [formData, setFormData] = useState<UserProfileData>({
-    userId: 0,
-    username: "",
+  // Brand color constant for inline styles
+  const brandColor = "#b2744c";
+
+  const [formData, setFormData] = useState({
     email: "",
-    fullName: "",
     phoneNumber: "",
     address: "",
-    profilePictureUrl: "",
-    joinDate: "",
+    password: "",
   });
 
   useEffect(() => {
-    // Simulating API fetch
-    setTimeout(() => {
+    if (!isLoading && !user) {
+      navigate("/login");
+    } else if (user) {
       setFormData({
-        userId: 4350,
-        username: "JohnDoe123",
-        email: "johndoe@example.com",
-        fullName: "John Doe",
-        phoneNumber: "+84 90 123 4567",
-        address: "123 Nguyen Hue, District 1, HCMC",
-        profilePictureUrl:
-          "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=500&q=80",
-        joinDate: "November 2023",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        address: user.address || "",
+        password: "",
       });
-      setLoading(false);
-    }, 600);
-  }, []);
-
-  const handleLogout = () => {
-    // Clear tokens here
-    navigate("/login");
-  };
+    }
+  }, [user, isLoading, navigate]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call
-    setTimeout(() => {
-      alert("Profile updated successfully!");
-      setIsEditing(false);
-    }, 500);
+    setSaveLoading(true);
+    try {
+      const res = await apiRequest("/user/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          mobile_number: formData.phoneNumber,
+          address: formData.address,
+          password: formData.password,
+        }),
+      });
+
+      if (res.ok) {
+        alert("Profile updated successfully!");
+        setIsEditing(false);
+        // Optional: Trigger a re-fetch of user data here if AuthContext supported it
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert(data.detail || "Failed to update profile.");
+      }
+    } catch (err) {
+      alert("Network error.");
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
-  if (loading) {
+  const getUserInitial = () => {
+    return user?.email ? user.email.charAt(0).toUpperCase() : "U";
+  };
+
+  if (isLoading || !user)
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-        <div className="spinner-border text-warning" role="status">
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-secondary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
     );
-  }
 
   return (
-    <div className="bg-light min-vh-100">
+    <div className="bg-light min-vh-100 d-flex flex-column">
       <Navbar />
 
-      {/* Banner Section */}
+      {/* Header Banner */}
       <div
+        className="position-relative"
         style={{
-          height: "250px",
-          background: "linear-gradient(90deg, #b2744c 0%, #d4956a 100%)",
-          position: "relative",
+          height: "220px",
+          background: `linear-gradient(135deg, ${brandColor} 0%, #d4956a 100%)`,
         }}
       ></div>
 
       <div
-        className="container"
-        style={{ marginTop: "-100px", marginBottom: "80px" }}
+        className="container flex-grow-1"
+        style={{ marginTop: "-80px", marginBottom: "60px" }}
       >
-        <div className="card border-0 shadow-lg overflow-hidden rounded-3">
-          <div className="card-body p-0">
-            <div className="row g-0">
-              {/* Left Sidebar - Profile Summary */}
-              <div className="col-lg-4 bg-white border-end text-center p-5">
-                <div className="position-relative d-inline-block mb-4">
-                  <img
-                    src={
-                      formData.profilePictureUrl ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt="Profile"
-                    className="rounded-circle img-thumbnail shadow-sm"
-                    style={{
-                      width: "180px",
-                      height: "180px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  {isEditing && (
-                    <div
-                      className="position-absolute bottom-0 end-0 bg-white rounded-circle p-2 shadow-sm border"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <i className="fa fa-camera text-muted"></i>
-                    </div>
-                  )}
+        <div className="row g-4">
+          {/* --- SIDEBAR CARD --- */}
+          <div className="col-lg-3">
+            <div className="card border-0 shadow-lg h-100 overflow-hidden">
+              <div className="card-body text-center p-4">
+                {/* Avatar (Updated Size) */}
+                <div
+                  className="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3 shadow-sm border border-3 border-white"
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: "#f8f9fa",
+                    color: brandColor,
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {getUserInitial()}
                 </div>
-                <h3 className="fw-bold mb-1">{formData.fullName}</h3>
-                <p className="text-muted mb-4">@{formData.username}</p>
 
-                <div className="d-grid gap-2">
-                  {!isEditing ? (
-                    <button
-                      className="btn btn-outline-warning text-dark fw-bold"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      <i className="fa fa-pencil me-2"></i> Edit Profile
-                    </button>
-                  ) : (
-                    <button
-                      className="btn btn-outline-secondary"
-                      onClick={() => setIsEditing(false)}
-                    >
-                      Cancel Editing
-                    </button>
-                  )}
-                  <button className="btn btn-danger" onClick={handleLogout}>
-                    Logout
+                {/* Email (Truncated) */}
+                <h6 className="fw-bold mb-1 text-dark text-truncate">
+                  {user.email}
+                </h6>
+                <p className="text-muted small mb-4">Member</p>
+
+                <div className="d-grid gap-2 text-start">
+                  {/* Profile - Active */}
+                  <button className="btn btn-light fw-bold text-dark d-flex align-items-center justify-content-between active">
+                    <span>
+                      <i className="fa fa-user-circle me-2 text-muted"></i>{" "}
+                      Profile Details
+                    </span>
+                    <i className="fa fa-chevron-right small text-muted"></i>
                   </button>
+
+                  {/* History - Link */}
+                  <Link
+                    to="/booking-history"
+                    className="btn btn-white text-muted d-flex align-items-center justify-content-between hover-bg-light"
+                  >
+                    <span>
+                      <i className="fa fa-history me-2"></i> Booking History
+                    </span>
+                  </Link>
                 </div>
 
-                <div className="mt-5 text-start">
-                  <small className="text-muted text-uppercase fw-bold ls-1">
-                    Member Info
-                  </small>
-                  <ul className="list-unstyled mt-3">
-                    <li className="mb-2">
-                      <i className="fa fa-calendar me-2 text-warning"></i>{" "}
-                      Joined {formData.joinDate}
-                    </li>
-                    <li className="mb-2">
-                      <i className="fa fa-id-card me-2 text-warning"></i> ID: #
-                      {formData.userId}
-                    </li>
-                  </ul>
-                </div>
+                <hr className="my-4 text-muted opacity-25" />
+
+                <button
+                  onClick={logout}
+                  className="btn btn-outline-danger w-100 rounded-pill btn-sm"
+                >
+                  <i className="fa fa-sign-out me-2"></i> Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* --- MAIN PROFILE FORM --- */}
+          <div className="col-lg-9">
+            <div className="card border-0 shadow-lg">
+              <div className="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h5
+                  className="mb-0 fw-bold font-playfair"
+                  style={{ color: "#333" }}
+                >
+                  Personal Information
+                </h5>
+                {!isEditing && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn btn-sm btn-outline-dark rounded-pill px-3"
+                  >
+                    <i className="fa fa-pencil me-1"></i> Edit
+                  </button>
+                )}
               </div>
 
-              {/* Right Content - Details Form */}
-              <div className="col-lg-8 p-5">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h4 className="fw-bold m-0 text-secondary">
-                    {isEditing ? "Update Information" : "Account Details"}
-                  </h4>
-                </div>
-
+              <div className="card-body p-4">
                 <form onSubmit={handleSave}>
                   <div className="row g-4">
+                    {/* Email */}
                     <div className="col-md-6">
-                      <label className="form-label text-muted small fw-bold">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        className={`form-control ${
-                          !isEditing ? "bg-light border-0" : ""
-                        }`}
-                        value={formData.fullName}
-                        readOnly={!isEditing}
-                        onChange={(e) =>
-                          setFormData({ ...formData, fullName: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label text-muted small fw-bold">
+                      <label className="form-label text-muted small fw-bold text-uppercase">
                         Email Address
                       </label>
                       <input
-                        type="email"
-                        className="form-control bg-light border-0"
+                        className="form-control bg-light"
                         value={formData.email}
-                        readOnly
                         disabled
+                        style={{ border: "1px solid #eee" }}
                       />
-                      {isEditing && (
-                        <small
-                          className="text-muted"
-                          style={{ fontSize: "10px" }}
-                        >
-                          Email cannot be changed
-                        </small>
-                      )}
+                      <small
+                        className="text-muted fst-italic"
+                        style={{ fontSize: "0.8rem" }}
+                      >
+                        Email cannot be changed.
+                      </small>
                     </div>
+
+                    {/* Phone */}
                     <div className="col-md-6">
-                      <label className="form-label text-muted small fw-bold">
+                      <label className="form-label text-muted small fw-bold text-uppercase">
                         Phone Number
                       </label>
                       <input
-                        type="tel"
                         className={`form-control ${
-                          !isEditing ? "bg-light border-0" : ""
+                          isEditing ? "bg-white" : "bg-light text-muted"
                         }`}
                         value={formData.phoneNumber}
-                        readOnly={!isEditing}
+                        disabled={!isEditing}
+                        placeholder="Enter your phone number"
                         onChange={(e) =>
                           setFormData({
                             ...formData,
                             phoneNumber: e.target.value,
                           })
                         }
+                        style={{
+                          border: isEditing
+                            ? `1px solid ${brandColor}`
+                            : "1px solid #eee",
+                        }}
                       />
                     </div>
-                    <div className="col-md-6">
-                      <label className="form-label text-muted small fw-bold">
-                        Username
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control bg-light border-0"
-                        value={formData.username}
-                        readOnly
-                        disabled
-                      />
-                    </div>
+
+                    {/* Address */}
                     <div className="col-12">
-                      <label className="form-label text-muted small fw-bold">
-                        Address
+                      <label className="form-label text-muted small fw-bold text-uppercase">
+                        Delivery Address
                       </label>
                       <textarea
                         className={`form-control ${
-                          !isEditing ? "bg-light border-0" : ""
+                          isEditing ? "bg-white" : "bg-light text-muted"
                         }`}
-                        rows={3}
                         value={formData.address}
-                        readOnly={!isEditing}
+                        disabled={!isEditing}
+                        rows={3}
+                        placeholder="Enter your full address"
                         onChange={(e) =>
                           setFormData({ ...formData, address: e.target.value })
                         }
-                      ></textarea>
+                        style={{
+                          border: isEditing
+                            ? `1px solid ${brandColor}`
+                            : "1px solid #eee",
+                        }}
+                      />
                     </div>
 
+                    {/* Password Confirmation - Only visible in Edit Mode */}
                     {isEditing && (
                       <div className="col-12">
-                        <label className="form-label text-muted small fw-bold">
-                          Profile Picture URL
-                        </label>
-                        <input
-                          type="url"
-                          className="form-control"
-                          value={formData.profilePictureUrl}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              profilePictureUrl: e.target.value,
-                            })
-                          }
-                        />
+                        <div className="p-3 rounded bg-light border border-warning-subtle">
+                          <label className="form-label fw-bold text-danger">
+                            <i className="fa fa-lock me-2"></i>Security Check
+                          </label>
+                          <p className="small text-muted mb-2">
+                            Please enter your password to confirm these changes.
+                          </p>
+                          <input
+                            type="password"
+                            className="form-control"
+                            required
+                            placeholder="Current Password"
+                            value={formData.password}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                password: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
 
+                  {/* Action Buttons */}
                   {isEditing && (
-                    <div className="mt-4 text-end">
+                    <div className="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                      <button
+                        type="button"
+                        className="btn btn-light text-muted fw-bold px-4"
+                        onClick={() => {
+                          setIsEditing(false);
+                          // Reset form to user data
+                          setFormData({
+                            email: user.email || "",
+                            phoneNumber: user.phoneNumber || "",
+                            address: user.address || "",
+                            password: "",
+                          });
+                        }}
+                      >
+                        Cancel
+                      </button>
                       <button
                         type="submit"
-                        className="btn btn-warning text-white fw-bold px-4 py-2 rounded-pill shadow-sm"
+                        className="btn text-white px-4 fw-bold shadow-sm"
+                        disabled={saveLoading}
+                        style={{ backgroundColor: brandColor }}
                       >
-                        Save Changes
+                        {saveLoading ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Saving...
+                          </>
+                        ) : (
+                          "Save Changes"
+                        )}
                       </button>
                     </div>
                   )}
