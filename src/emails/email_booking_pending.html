@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Request Received</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    "
+  >
+    <table
+      role="presentation"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+    >
+      <tr>
+        <td style="padding: 20px 0 30px 0">
+          <table
+            align="center"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="600"
+            style="
+              border-collapse: collapse;
+              background-color: #ffffff;
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                align="center"
+                style="padding: 30px 0; background-color: #b2744c"
+              >
+                <h1
+                  style="
+                    color: #ffffff;
+                    font-family: serif;
+                    margin: 0;
+                    font-size: 28px;
+                  "
+                >
+                  SaiGourmet
+                </h1>
+              </td>
+            </tr>
+            <!-- Body -->
+            <tr>
+              <td bgcolor="#ffffff" style="padding: 40px 30px">
+                <h2 style="color: #333333; margin-top: 0">Request Received</h2>
+                <p style="color: #666666; font-size: 16px; line-height: 1.5">
+                  Hi {{customer_name}},<br /><br />
+                  We have received your booking request for
+                  <strong>{{restaurant_name}}</strong>. The restaurant manager
+                  is currently reviewing your request. You will receive a
+                  confirmation email shortly.
+                </p>
+
+                <table
+                  width="100%"
+                  cellpadding="10"
+                  cellspacing="0"
+                  style="
+                    background-color: #f8f9fa;
+                    border-radius: 6px;
+                    margin: 20px 0;
+                  "
+                >
+                  <tr>
+                    <td width="30%" style="font-weight: bold; color: #555">
+                      Restaurant:
+                    </td>
+                    <td style="color: #333">{{restaurant_name}}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; color: #555">Date & Time:</td>
+                    <td style="color: #333">{{reservation_time}}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; color: #555">Guests:</td>
+                    <td style="color: #333">{{num_of_guests}} People</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; color: #555">Note:</td>
+                    <td style="color: #333">{{note}}</td>
+                  </tr>
+                </table>
+
+                <p style="color: #999; font-size: 14px; margin-top: 30px">
+                  *Please do not arrive until you receive the "Booking Accepted"
+                  email.
+                </p>
+              </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+              <td
+                bgcolor="#333333"
+                style="padding: 20px 30px; text-align: center"
+              >
+                <p style="color: #ffffff; font-size: 12px; margin: 0">
+                  &copy; 2025 SaiGourmet. All rights reserved.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
