@@ -56,7 +56,6 @@ const UserProfile: React.FC = () => {
       if (res.ok) {
         alert("Profile updated successfully!");
         setIsEditing(false);
-        // Optional: Trigger a re-fetch of user data here if AuthContext supported it
         window.location.reload();
       } else {
         const data = await res.json();
@@ -130,7 +129,7 @@ const UserProfile: React.FC = () => {
                   <button className="btn btn-light fw-bold text-dark d-flex align-items-center justify-content-between active">
                     <span>
                       <i className="fa fa-user-circle me-2 text-muted"></i>{" "}
-                      Profile Details
+                      Profile
                     </span>
                     <i className="fa fa-chevron-right small text-muted"></i>
                   </button>
@@ -141,7 +140,7 @@ const UserProfile: React.FC = () => {
                     className="btn btn-white text-muted d-flex align-items-center justify-content-between hover-bg-light"
                   >
                     <span>
-                      <i className="fa fa-history me-2"></i> Booking History
+                      <i className="fa fa-history me-2"></i> History
                     </span>
                   </Link>
                 </div>

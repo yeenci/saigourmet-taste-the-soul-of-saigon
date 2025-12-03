@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Booking Request</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    "
+  >
+    <table
+      role="presentation"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+    >
+      <tr>
+        <td style="padding: 20px 0 30px 0">
+          <table
+            align="center"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            width="600"
+            style="
+              border-collapse: collapse;
+              background-color: #ffffff;
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                align="center"
+                style="padding: 30px 0; background-color: #b2744c"
+              >
+                <h1
+                  style="
+                    color: #ffffff;
+                    font-family: serif;
+                    margin: 0;
+                    font-size: 28px;
+                  "
+                >
+                  SaiGourmet
+                </h1>
+              </td>
+            </tr>
+            <!-- Body -->
+            <tr>
+              <td bgcolor="#ffffff" style="padding: 40px 30px">
+                <div style="text-align: center; margin-bottom: 20px">
+                  <span
+                    style="
+                      background-color: #ffc107;
+                      color: #333;
+                      padding: 6px 16px;
+                      border-radius: 50px;
+                      font-size: 12px;
+                      font-weight: bold;
+                      text-transform: uppercase;
+                      letter-spacing: 1px;
+                    "
+                  >
+                    Pending Approval
+                  </span>
+                </div>
+
+                <h2
+                  style="
+                    color: #333333;
+                    margin-top: 0;
+                    text-align: center;
+                    margin-bottom: 10px;
+                  "
+                >
+                  New Booking Request
+                </h2>
+                <p
+                  style="
+                    color: #666666;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    text-align: center;
+                    margin-bottom: 30px;
+                  "
+                >
+                  Hello Admin, <strong>{{customer_name}}</strong> has submitted
+                  a new reservation request. Please review the details below.
+                </p>
+
+                <table
+                  width="100%"
+                  cellpadding="12"
+                  cellspacing="0"
+                  style="
+                    background-color: #f8f9fa;
+                    border: 1px solid #eeeeee;
+                    border-radius: 6px;
+                    margin-bottom: 35px;
+                  "
+                >
+                  <tr>
+                    <td
+                      width="35%"
+                      style="
+                        font-weight: bold;
+                        color: #555;
+                        border-bottom: 1px solid #eee;
+                      "
+                    >
+                      Booking ID:
+                    </td>
+                    <td
+                      style="
+                        color: #333;
+                        font-family: monospace;
+                        border-bottom: 1px solid #eee;
+                      "
+                    >
+                      #{{booking_id}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        font-weight: bold;
+                        color: #555;
+                        border-bottom: 1px solid #eee;
+                      "
+                    >
+                      Restaurant:
+                    </td>
+                    <td
+                      style="
+                        color: #333;
+                        font-weight: bold;
+                        border-bottom: 1px solid #eee;
+                      "
+                    >
+                      {{restaurant_name}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        font-weight: bold;
+                        color: #555;
+                        border-bottom: 1px solid #eee;
+                      "
+                    >
+                      Date & Time:
+                    </td>
+                    <td style="color: #333; border-bottom: 1px solid #eee">
+                      {{reservation_time}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        font-weight: bold;
+                        color: #555;
+                        border-bottom: 1px solid #eee;
+                      "
+                    >
+                      Guest Info:
+                    </td>
+                    <td style="color: #333; border-bottom: 1px solid #eee">
+                      {{customer_name}}<br />
+                      <span style="font-size: 13px; color: #777"
+                        >{{customer_phone}}</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        font-weight: bold;
+                        color: #555;
+                        border-bottom: 1px solid #eee;
+                      "
+                    >
+                      Party Size:
+                    </td>
+                    <td style="color: #333; border-bottom: 1px solid #eee">
+                      {{num_of_guests}} People
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; color: #555">Note:</td>
+                    <td style="color: #333; font-style: italic">{{note}}</td>
+                  </tr>
+                </table>
+
+                <div style="text-align: center">
+                  <a
+                    target="_blank"
+                    href="{{{api}/admin/restaurant/{restaurant_id}/booking/{booking_id}}}"
+                    style="
+                      background-color: #b2744c;
+                      color: white;
+                      padding: 14px 35px;
+                      text-decoration: none;
+                      border-radius: 50px;
+                      font-weight: bold;
+                      font-size: 16px;
+                      display: inline-block;
+                      box-shadow: 0 4px 6px rgba(178, 116, 76, 0.3);
+                    "
+                    >Manage Booking</a
+                  >
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                bgcolor="#333333"
+                style="padding: 20px 30px; text-align: center"
+              >
+                <p style="color: #ffffff; font-size: 12px; margin: 0">
+                  &copy; 2025 SaiGourmet Admin System
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

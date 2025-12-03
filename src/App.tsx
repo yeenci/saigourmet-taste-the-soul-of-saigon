@@ -8,7 +8,7 @@ import {
 import "./App.css";
 
 // Context
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthProvider";
 
 // Components
 import ScrollToTop from "./components/ScrollToTop";
@@ -33,9 +33,11 @@ import UserProfile from "./pages/User/UserProfile";
 import BookingForm from "./pages/User/BookingForm";
 
 // Pages - Admin (Should be protected)
-import OwnerBookingOrder from "./pages/Admin/OwnerBookingOrder";
+// import OwnerBookingOrder from "./pages/Admin/OwnerBookingOrder";
 import CreateRestaurant from "./pages/Admin/CreateRestaurant";
 import NotFound from "./pages/NotFound";
+import OwnerBookingDashboard from "./pages/Admin/OwnerBookingDashboard";
+import BookingHistory from "./pages/User/BookingHistory";
 
 const App: React.FC = () => {
   return (
@@ -80,11 +82,13 @@ const App: React.FC = () => {
           {/* These components contain logic to redirect if not logged in */}
 
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/booking-history" element={<BookingHistory />} />
 
           {/* ================= ADMIN ROUTES ================= */}
           {/* Ideally these should be wrapped in a specific AdminGuard */}
 
-          <Route path="/admin/bookings" element={<OwnerBookingOrder />} />
+          {/* <Route path="/admin/bookings" element={<OwnerBookingOrder />} /> */}
+          <Route path="/admin/dashboard/:restaurantId" element={<OwnerBookingDashboard />} />
           <Route
             path="/admin/create-restaurant"
             element={<CreateRestaurant />}

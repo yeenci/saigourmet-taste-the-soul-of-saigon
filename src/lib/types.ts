@@ -28,10 +28,10 @@ export interface Booking {
   name: string;
   email: string;
   phone: string;
-  time: string;
+  reservation_time: string;
   num_of_guests: number;
   note: string;
-  booking_status: "PENDING" | "ACCEPTED" | "DENIED" | "POSTPONED";
+  booking_status: -1 | 0 | 1;
 }
 
 export interface Article {
@@ -62,6 +62,7 @@ export interface User {
   email: string;
   phoneNumber: string;
   address: string;
+  isAdmin?: boolean;
 }
 
 export interface AuthContextType {
