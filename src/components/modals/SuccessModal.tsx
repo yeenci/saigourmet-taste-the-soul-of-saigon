@@ -2,9 +2,10 @@ import { useNavigate } from "react-router-dom";
 
 type SuccessModalProps = {
   title: string;
-  path: string; // Primary path (e.g., Home)
+  path?: string; // Made optional to allow onConfirm-only usage
   content: string;
   button: string; // Primary button text
+  onConfirm?: () => void; // Added to allow custom actions (like reload)
   secondaryPath?: string; // Optional return path
   secondaryButton?: string; // Optional secondary text
 };
@@ -14,10 +15,19 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   path,
   content,
   button,
+  onConfirm,
   secondaryPath,
   secondaryButton,
 }) => {
   const navigate = useNavigate();
+
+  const handlePrimaryClick = () => {
+    if (onConfirm) {
+      onConfirm();
+    } else if (path) {
+      navigate(path);
+    }
+  };
 
   return (
     <div
@@ -58,7 +68,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
         {/* Primary Button */}
         <button
           className="btn-auth"
-          onClick={() => navigate(path)}
+          onClick={handlePrimaryClick}
           style={{ width: "100%", margin: 0 }}
         >
           {button}

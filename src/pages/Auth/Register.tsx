@@ -195,7 +195,7 @@ const Register: React.FC = () => {
       {showSuccessModal && (
         <SuccessModal
           title="Account Created!"
-          path="/"
+          path="/login"
           content="Welcome! You're now signed in."
           button="Go to Home"
           secondaryPath={previousPath}

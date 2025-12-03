@@ -5,12 +5,19 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useAuth } from "../../context/AuthContext";
 import { apiRequest } from "../../lib/utils";
+import SuccessModal from "../../components/modals/SuccessModal";
+import ErrorModal from "../../components/modals/ErrorModal";
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
   const { user, token, logout, isLoading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+
+  // Modal States
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const brandColor = "#b2744c";
 
@@ -25,13 +32,18 @@ const UserProfile: React.FC = () => {
     if (!isLoading && !user) {
       navigate("/login");
     } else if (user) {
-      setFormData({
-        email: user.email || "",
-        // Correctly reading camelCase from Context User object
-        phone_number: user.phone_number || "", 
-        address: user.address || "",
-        password: "",
-      });
+      // Check if there is saved session data after an error
+      const savedData = sessionStorage.getItem("userFormData");
+      if (savedData) {
+        setFormData(JSON.parse(savedData));
+      } else {
+        setFormData({
+          email: user.email || "",
+          phone_number: user.phone_number || "",
+          address: user.address || "",
+          password: "",
+        });
+      }
     }
   }, [user, isLoading, navigate]);
 
@@ -45,25 +57,31 @@ const UserProfile: React.FC = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        // Correctly mapping to snake_case for API
         body: JSON.stringify({
           email: formData.email,
-          phone_number: formData.phone_number, 
+          phone_number: formData.phone_number,
           address: formData.address,
           password: formData.password,
         }),
       });
 
       if (res.ok) {
-        alert("Profile updated successfully!");
+        // Success: Clear session storage if it existed
+        sessionStorage.removeItem("userFormData");
         setIsEditing(false);
-        window.location.reload();
+        setShowSuccessModal(true);
       } else {
         const data = await res.json();
-        alert(data.detail || data.message || "Failed to update profile.");
+        // Error: Save data to session
+        sessionStorage.setItem("userFormData", JSON.stringify(formData));
+        setErrorMessage(data.detail || data.message || "Failed to update profile.");
+        setShowErrorModal(true);
       }
     } catch (err) {
-      alert("Network error.");
+      // Network Error: Save data to session
+      sessionStorage.setItem("userFormData", JSON.stringify(formData));
+      setErrorMessage("Network error. Please try again later.");
+      setShowErrorModal(true);
     } finally {
       setSaveLoading(false);
     }
@@ -200,7 +218,6 @@ const UserProfile: React.FC = () => {
                         className={`form-control ${
                           isEditing ? "bg-white" : "bg-light text-muted"
                         }`}
-                        // Use correct state key
                         value={formData.phone_number}
                         disabled={!isEditing}
                         placeholder="Enter your phone number"
@@ -313,6 +330,28 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Modals */}
+      {showSuccessModal && (
+        <SuccessModal
+          title="Profile Updated!"
+          content="Your profile information has been successfully updated."
+          button="OK"
+          onConfirm={() => {
+            setShowSuccessModal(false);
+            window.location.reload();
+          }}
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          title="Update Failed"
+          content={errorMessage}
+          button="Try Again"
+          onConfirm={() => setShowErrorModal(false)}
+        />
+      )}
     </div>
   );
 };
