@@ -12,12 +12,11 @@ const UserProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
 
-  // Brand color constant for inline styles
   const brandColor = "#b2744c";
 
   const [formData, setFormData] = useState({
     email: "",
-    phoneNumber: "",
+    phone_number: "",
     address: "",
     password: "",
   });
@@ -28,7 +27,8 @@ const UserProfile: React.FC = () => {
     } else if (user) {
       setFormData({
         email: user.email || "",
-        phoneNumber: user.phoneNumber || "",
+        // Correctly reading camelCase from Context User object
+        phone_number: user.phone_number || "", 
         address: user.address || "",
         password: "",
       });
@@ -45,9 +45,10 @@ const UserProfile: React.FC = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+        // Correctly mapping to snake_case for API
         body: JSON.stringify({
           email: formData.email,
-          mobile_number: formData.phoneNumber,
+          phone_number: formData.phone_number, 
           address: formData.address,
           password: formData.password,
         }),
@@ -59,7 +60,7 @@ const UserProfile: React.FC = () => {
         window.location.reload();
       } else {
         const data = await res.json();
-        alert(data.detail || "Failed to update profile.");
+        alert(data.detail || data.message || "Failed to update profile.");
       }
     } catch (err) {
       alert("Network error.");
@@ -85,7 +86,6 @@ const UserProfile: React.FC = () => {
     <div className="bg-light min-vh-100 d-flex flex-column">
       <Navbar />
 
-      {/* Header Banner */}
       <div
         className="position-relative"
         style={{
@@ -99,11 +99,9 @@ const UserProfile: React.FC = () => {
         style={{ marginTop: "-80px", marginBottom: "60px" }}
       >
         <div className="row g-4">
-          {/* --- SIDEBAR CARD --- */}
           <div className="col-lg-3">
             <div className="card border-0 shadow-lg h-100 overflow-hidden">
               <div className="card-body text-center p-4">
-                {/* Avatar (Updated Size) */}
                 <div
                   className="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3 shadow-sm border border-3 border-white"
                   style={{
@@ -118,14 +116,12 @@ const UserProfile: React.FC = () => {
                   {getUserInitial()}
                 </div>
 
-                {/* Email (Truncated) */}
                 <h6 className="fw-bold mb-1 text-dark text-truncate">
                   {user.email}
                 </h6>
                 <p className="text-muted small mb-4">Member</p>
 
                 <div className="d-grid gap-2 text-start">
-                  {/* Profile - Active */}
                   <button className="btn btn-light fw-bold text-dark d-flex align-items-center justify-content-between active">
                     <span>
                       <i className="fa fa-user-circle me-2 text-muted"></i>{" "}
@@ -134,7 +130,6 @@ const UserProfile: React.FC = () => {
                     <i className="fa fa-chevron-right small text-muted"></i>
                   </button>
 
-                  {/* History - Link */}
                   <Link
                     to="/booking-history"
                     className="btn btn-white text-muted d-flex align-items-center justify-content-between hover-bg-light"
@@ -157,7 +152,6 @@ const UserProfile: React.FC = () => {
             </div>
           </div>
 
-          {/* --- MAIN PROFILE FORM --- */}
           <div className="col-lg-9">
             <div className="card border-0 shadow-lg">
               <div className="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
@@ -180,7 +174,6 @@ const UserProfile: React.FC = () => {
               <div className="card-body p-4">
                 <form onSubmit={handleSave}>
                   <div className="row g-4">
-                    {/* Email */}
                     <div className="col-md-6">
                       <label className="form-label text-muted small fw-bold text-uppercase">
                         Email Address
@@ -199,7 +192,6 @@ const UserProfile: React.FC = () => {
                       </small>
                     </div>
 
-                    {/* Phone */}
                     <div className="col-md-6">
                       <label className="form-label text-muted small fw-bold text-uppercase">
                         Phone Number
@@ -208,13 +200,14 @@ const UserProfile: React.FC = () => {
                         className={`form-control ${
                           isEditing ? "bg-white" : "bg-light text-muted"
                         }`}
-                        value={formData.phoneNumber}
+                        // Use correct state key
+                        value={formData.phone_number}
                         disabled={!isEditing}
                         placeholder="Enter your phone number"
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            phoneNumber: e.target.value,
+                            phone_number: e.target.value,
                           })
                         }
                         style={{
@@ -225,7 +218,6 @@ const UserProfile: React.FC = () => {
                       />
                     </div>
 
-                    {/* Address */}
                     <div className="col-12">
                       <label className="form-label text-muted small fw-bold text-uppercase">
                         Delivery Address
@@ -249,7 +241,6 @@ const UserProfile: React.FC = () => {
                       />
                     </div>
 
-                    {/* Password Confirmation - Only visible in Edit Mode */}
                     {isEditing && (
                       <div className="col-12">
                         <div className="p-3 rounded bg-light border border-warning-subtle">
@@ -277,7 +268,6 @@ const UserProfile: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Action Buttons */}
                   {isEditing && (
                     <div className="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                       <button
@@ -285,10 +275,9 @@ const UserProfile: React.FC = () => {
                         className="btn btn-light text-muted fw-bold px-4"
                         onClick={() => {
                           setIsEditing(false);
-                          // Reset form to user data
                           setFormData({
                             email: user.email || "",
-                            phoneNumber: user.phoneNumber || "",
+                            phone_number: user.phone_number || "",
                             address: user.address || "",
                             password: "",
                           });

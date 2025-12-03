@@ -104,7 +104,7 @@ const BookingForm: React.FC = () => {
         ...prev,
         name: user.email.split("@")[0],
         email: user.email,
-        phone: user.phoneNumber || prev.phone,
+        phone: user.phone_number || prev.phone,
       }));
     }
   }, [searchParams, user]);

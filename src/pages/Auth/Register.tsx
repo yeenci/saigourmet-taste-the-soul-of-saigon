@@ -19,7 +19,7 @@ const Register: React.FC = () => {
 
   const [formData, setFormData] = useState({
     email: "",
-    phoneNumber: "",
+    phone_number: "", // Changed to match input name
     address: "",
     password: "",
     confirmPassword: "",
@@ -39,13 +39,13 @@ const Register: React.FC = () => {
     }
     setLoading(true);
 
-    // FIX 1: Map the state data to the exact keys required by the API
+    // Map React state (camelCase) to API requirement (snake_case)
     const payload = {
       email: formData.email,
-      phone_number: formData.phoneNumber,
+      phone_number: formData.phone_number, // Mapping here
       address: formData.address,
       password: formData.password,
-      isAdmin: false,
+      isAdmin: false, // Default to false as requested
     };
 
     try {
@@ -69,7 +69,6 @@ const Register: React.FC = () => {
         let msg = "Registration failed";
         // Handle Validation Errors (422)
         if (data.detail && Array.isArray(data.detail)) {
-          // Combine validation errors into a readable string
           msg = data.detail
             .map((err: any) => `${err.loc[1]}: ${err.msg}`)
             .join(", ");
@@ -119,10 +118,9 @@ const Register: React.FC = () => {
             <div className="col-md-6">
               <div className="modern-input-group">
                 <i className="fa fa-phone"></i>
-                {/* FIX 2: Changed name="mobile_number" to name="phoneNumber" to match state */}
                 <input
                   type="tel"
-                  name="phoneNumber"
+                  name="phone_number" // Matches formData key
                   className="modern-input"
                   placeholder="Phone"
                   onChange={handleChange}
@@ -196,9 +194,9 @@ const Register: React.FC = () => {
 
       {showSuccessModal && (
         <SuccessModal
-          title="Login Successful!"
+          title="Account Created!"
           path="/"
-          content="Welcome back! You're now signed in."
+          content="Welcome! You're now signed in."
           button="Go to Home"
           secondaryPath={previousPath}
           secondaryButton={

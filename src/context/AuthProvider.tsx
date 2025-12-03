@@ -70,11 +70,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       if (response.ok) {
         const user = await response.json();
         const userData = user.data;
+
         setUser({
           id: userData.id,
           email: userData.email,
-          phoneNumber: userData.phoneNumber,
+          phone_number: userData.phoneNumber || userData.phone_number, 
           address: userData.address,
+          isAdmin: userData.isAdmin || false,
         });
       } else {
         logout();
