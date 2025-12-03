@@ -3,7 +3,7 @@ export interface UserProfileData {
   username: string;
   email: string;
   fullName: string;
-  phoneNumber: string;
+  phone_number: string;
   address: string;
   profilePictureUrl: string;
   joinDate: string;
@@ -60,9 +60,9 @@ export interface District {
 export interface User {
   id: string;
   email: string;
-  phoneNumber: string;
+  phone_number: string;
   address: string;
-  isAdmin?: boolean;
+  isAdmin: boolean;
 }
 
 export interface AuthContextType {
