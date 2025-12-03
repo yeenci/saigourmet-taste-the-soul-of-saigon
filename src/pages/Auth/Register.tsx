@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -10,18 +11,15 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // New state for password visibility
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Success Modal State
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const previousPath = location.state?.from;
 
   const [formData, setFormData] = useState({
     email: "",
-    mobile_number: "",
+    phoneNumber: "",
     address: "",
     password: "",
     confirmPassword: "",
@@ -41,11 +39,13 @@ const Register: React.FC = () => {
     }
     setLoading(true);
 
+    // FIX 1: Map the state data to the exact keys required by the API
     const payload = {
       email: formData.email,
-      phoneNumber: formData.mobile_number,
+      phone_number: formData.phoneNumber,
       address: formData.address,
       password: formData.password,
+      isAdmin: false,
     };
 
     try {
@@ -67,8 +67,12 @@ const Register: React.FC = () => {
         setShowSuccessModal(true);
       } else {
         let msg = "Registration failed";
+        // Handle Validation Errors (422)
         if (data.detail && Array.isArray(data.detail)) {
-          msg = data.detail[0].msg;
+          // Combine validation errors into a readable string
+          msg = data.detail
+            .map((err: any) => `${err.loc[1]}: ${err.msg}`)
+            .join(", ");
         } else if (data.message) {
           msg = data.message;
         }
@@ -115,9 +119,10 @@ const Register: React.FC = () => {
             <div className="col-md-6">
               <div className="modern-input-group">
                 <i className="fa fa-phone"></i>
+                {/* FIX 2: Changed name="mobile_number" to name="phoneNumber" to match state */}
                 <input
                   type="tel"
-                  name="mobile_number"
+                  name="phoneNumber"
                   className="modern-input"
                   placeholder="Phone"
                   onChange={handleChange}
@@ -140,7 +145,6 @@ const Register: React.FC = () => {
             </div>
           </div>
 
-          {/* Password Field with Toggle */}
           <div className="modern-input-group" style={{ position: "relative" }}>
             <i className="fa fa-lock"></i>
             <input
@@ -150,7 +154,7 @@ const Register: React.FC = () => {
               placeholder="Password"
               onChange={handleChange}
               required
-              style={{ paddingRight: "40px" }} // Prevent text from hiding behind the eye
+              style={{ paddingRight: "40px" }}
             />
             <i
               className={`fa ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
@@ -160,7 +164,6 @@ const Register: React.FC = () => {
             ></i>
           </div>
 
-          {/* Confirm Password Field with Toggle */}
           <div className="modern-input-group" style={{ position: "relative" }}>
             <i className="fa fa-check-circle"></i>
             <input
