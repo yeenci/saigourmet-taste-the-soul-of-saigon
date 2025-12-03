@@ -71,7 +71,7 @@ const Contact: React.FC = () => {
                                     <i className="fa fa-envelope fs-3" style={{color: '#b2744c'}}></i>
                                 </div>
                                 <h5 className="fw-bold font-playfair">Email Us</h5>
-                                <p className="text-muted small mb-0">support@vinatable.com<br/>partners@vinatable.com</p>
+                                <p className="text-muted small mb-0">support@saigourmet.com<br/>partners@saigourmet.com</p>
                             </div>
                         </div>
                     </div>

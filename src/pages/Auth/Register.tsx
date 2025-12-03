@@ -19,7 +19,7 @@ const Register: React.FC = () => {
 
   const [formData, setFormData] = useState({
     email: "",
-    phone_number: "", // Changed to match input name
+    phone_number: "",
     address: "",
     password: "",
     confirmPassword: "",
@@ -42,10 +42,10 @@ const Register: React.FC = () => {
     // Map React state (camelCase) to API requirement (snake_case)
     const payload = {
       email: formData.email,
-      phone_number: formData.phone_number, // Mapping here
+      phone_number: formData.phone_number,
       address: formData.address,
       password: formData.password,
-      isAdmin: false, // Default to false as requested
+      isAdmin: false,
     };
 
     try {
@@ -120,7 +120,7 @@ const Register: React.FC = () => {
                 <i className="fa fa-phone"></i>
                 <input
                   type="tel"
-                  name="phone_number" // Matches formData key
+                  name="phone_number"
                   className="modern-input"
                   placeholder="Phone"
                   onChange={handleChange}
@@ -197,7 +197,7 @@ const Register: React.FC = () => {
           title="Account Created!"
           path="/login"
           content="Welcome! You're now signed in."
-          button="Go to Home"
+          button="Go to Login"
           secondaryPath={previousPath}
           secondaryButton={
             previousPath ? "Continue where you left off" : undefined

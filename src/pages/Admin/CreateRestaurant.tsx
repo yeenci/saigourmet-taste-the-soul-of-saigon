@@ -1,41 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { CATEGORIES } from "../../lib/constants";
-
-// Constants for Dropdowns/Selection
-const DISTRICTS = [
-  "District 1",
-  "District 2",
-  "District 3",
-  "District 4",
-  "District 5",
-  "District 7",
-  "Binh Thanh",
-  "Phu Nhuan",
-  "Thao Dien",
-  "Tan Binh",
-];
+import { CATEGORIES, DISTRICTS } from "../../lib/constants";
+import { apiRequest } from "../../lib/utils";
+import { useAuth } from "../../context/AuthContext";
 
 const CreateRestaurant: React.FC = () => {
   const navigate = useNavigate();
+  const { user, token } = useAuth();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user && !user.isAdmin) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   // Form State
   const [formData, setFormData] = useState({
     name: "",
     address: "",
-    district: "",
-    phone: "",
-    openTime: "",
-    closeTime: "",
-    description: "",
-    pictureUrl: "",
-    selectedCategories: [] as string[],
+    district_id: 1, // Default ID
+    openTime: "", // HH:mm
+    closeTime: "", // HH:mm
+    rating: 5, // Default rating
+    image_url: "",
+    selectedCategories: [] as number[], // IDs
   });
 
-  // Handle Text Inputs
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -45,8 +38,7 @@ const CreateRestaurant: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle Category Selection (Toggle)
-  const toggleCategory = (catId: string) => {
+  const toggleCategory = (catId: number) => {
     setFormData((prev) => {
       const exists = prev.selectedCategories.includes(catId);
       if (exists) {
@@ -65,26 +57,70 @@ const CreateRestaurant: React.FC = () => {
     });
   };
 
-  // Handle Submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simple Validation
     if (formData.selectedCategories.length === 0) {
       alert("Please select at least one category.");
       setLoading(false);
       return;
     }
 
-    console.log("Submitting Data:", formData);
+    // FIX: Timezone conversion issue.
+    // Instead of converting Local -> UTC (which subtracts 7 hours in VN),
+    // We construct the date using Date.UTC with the input hours/minutes.
+    // This ensures toISOString() outputs exactly "T07:00:00.000Z" for an input of "07:00".
+    const formatToIso = (timeStr: string) => {
+      if (!timeStr) return new Date().toISOString();
+      const now = new Date();
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      
+      // Create date object treating input values as UTC components
+      const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes));
+      
+      return utcDate.toISOString();
+    };
 
-    // Simulate API Call
-    setTimeout(() => {
-      alert("Restaurant created successfully!");
+    const payload = {
+      name: formData.name,
+      address: formData.address,
+      district_id: Number(formData.district_id),
+      description: "", // Sending empty string as required by schema
+      image_url: formData.image_url,
+      categories: formData.selectedCategories,
+      openTime: formatToIso(formData.openTime),
+      closeTime: formatToIso(formData.closeTime),
+      rating: Number(formData.rating),
+    };
+
+    try {
+      const response = await apiRequest("/admin/restaurant/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        alert("Restaurant created successfully!");
+        navigate("/admin/dashboard");
+      } else {
+        const data = await response.json();
+        alert(
+          `Error: ${
+            data.detail ? JSON.stringify(data.detail) : "Failed to create"
+          }`
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error.");
+    } finally {
       setLoading(false);
-      navigate("/"); // Redirect to Home or Admin Dashboard
-    }, 1500);
+    }
   };
 
   return (
@@ -93,7 +129,6 @@ const CreateRestaurant: React.FC = () => {
 
       <div className="container my-5" style={{ maxWidth: "900px" }}>
         <div className="card border-0 shadow-lg rounded-3 overflow-hidden">
-          {/* Header Banner */}
           <div className="form-header-bg">
             <h2 className="fw-bold font-playfair mb-2">
               Partner with SaiGourmet
@@ -105,64 +140,50 @@ const CreateRestaurant: React.FC = () => {
 
           <div className="card-body p-5">
             <form onSubmit={handleSubmit}>
-              {/* --- Section 1: Basic Information --- */}
+              {/* Basic Info */}
               <div className="mb-5">
                 <h5 className="form-section-title">
                   <i className="fa fa-info-circle text-primary"></i> Basic
                   Information
                 </h5>
                 <div className="row g-3">
-                  <div className="col-md-6">
+                  <div className="col-md-8">
                     <div className="form-floating">
                       <input
                         type="text"
                         className="form-control"
-                        id="restaurantName"
+                        id="name"
                         placeholder="Name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
                         required
                       />
-                      <label htmlFor="restaurantName">Restaurant Name</label>
+                      <label htmlFor="name">Restaurant Name</label>
                     </div>
                   </div>
-                  <div className="col-md-6">
+                  <div className="col-md-4">
                     <div className="form-floating">
                       <input
-                        type="tel"
+                        type="number"
                         className="form-control"
-                        id="phone"
-                        placeholder="Phone"
-                        name="phone"
-                        value={formData.phone}
+                        id="rating"
+                        placeholder="Rating"
+                        name="rating"
+                        value={formData.rating}
                         onChange={handleChange}
+                        min="0"
+                        max="5"
+                        step="0.1"
                         required
                       />
-                      <label htmlFor="phone">Phone Number</label>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="form-floating">
-                      <textarea
-                        className="form-control"
-                        placeholder="Description"
-                        id="description"
-                        style={{ height: "100px" }}
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        required
-                      ></textarea>
-                      <label htmlFor="description">
-                        Short Description / Slogan
-                      </label>
+                      <label htmlFor="rating">Initial Rating (0-5)</label>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* --- Section 2: Location & Media --- */}
+              {/* Location & Media */}
               <div className="mb-5">
                 <h5 className="form-section-title">
                   <i className="fa fa-map-marker text-danger"></i> Location &
@@ -188,22 +209,19 @@ const CreateRestaurant: React.FC = () => {
                     <div className="form-floating">
                       <select
                         className="form-select"
-                        id="district"
-                        name="district"
-                        value={formData.district}
+                        id="district_id"
+                        name="district_id"
+                        value={formData.district_id}
                         onChange={handleChange}
                         required
                       >
-                        <option value="" disabled>
-                          Select...
-                        </option>
                         {DISTRICTS.map((dist) => (
-                          <option key={dist} value={dist}>
-                            {dist}
+                          <option key={dist.districtId} value={dist.districtId}>
+                            {dist.name}
                           </option>
                         ))}
                       </select>
-                      <label htmlFor="district">District</label>
+                      <label htmlFor="district_id">District</label>
                     </div>
                   </div>
                   <div className="col-12">
@@ -211,23 +229,20 @@ const CreateRestaurant: React.FC = () => {
                       <input
                         type="url"
                         className="form-control"
-                        id="pictureUrl"
+                        id="image_url"
                         placeholder="Image URL"
-                        name="pictureUrl"
-                        value={formData.pictureUrl}
+                        name="image_url"
+                        value={formData.image_url}
                         onChange={handleChange}
                         required
                       />
-                      <label htmlFor="pictureUrl">Cover Image URL</label>
-                    </div>
-                    <div className="form-text">
-                      Paste a link to a high-quality image of your restaurant.
+                      <label htmlFor="image_url">Cover Image URL</label>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* --- Section 3: Operations & Category --- */}
+              {/* Operations */}
               <div className="mb-5">
                 <h5 className="form-section-title">
                   <i className="fa fa-clock-o text-warning"></i> Operations &
@@ -263,18 +278,18 @@ const CreateRestaurant: React.FC = () => {
                 </div>
 
                 <label className="form-label text-muted small fw-bold d-block mb-3">
-                  Select Categories (Select at least one)
+                  Select Categories
                 </label>
                 <div className="category-grid">
                   {CATEGORIES.map((cat) => (
                     <div
                       key={cat.categoryId}
                       className={`category-chip ${
-                        formData.selectedCategories.includes(String(cat.categoryId))
+                        formData.selectedCategories.includes(cat.categoryId)
                           ? "active"
                           : ""
                       }`}
-                      onClick={() => toggleCategory(String(cat.categoryId))}
+                      onClick={() => toggleCategory(cat.categoryId)}
                     >
                       <i className={`fa ${cat.icon}`}></i> {cat.name}
                     </div>
@@ -282,7 +297,6 @@ const CreateRestaurant: React.FC = () => {
                 </div>
               </div>
 
-              {/* Submit Button */}
               <div className="d-grid mt-5">
                 <button
                   type="submit"
@@ -296,24 +310,14 @@ const CreateRestaurant: React.FC = () => {
                       Processing...
                     </span>
                   ) : (
-                    <span>Register Restaurant</span>
+                    "Register Restaurant"
                   )}
                 </button>
               </div>
             </form>
           </div>
         </div>
-
-        <div className="text-center mt-4">
-          <button
-            onClick={() => navigate("/")}
-            className="btn btn-link text-muted text-decoration-none"
-          >
-            <i className="fa fa-arrow-left me-1"></i> Back to Home
-          </button>
-        </div>
       </div>
-
       <Footer />
     </div>
   );

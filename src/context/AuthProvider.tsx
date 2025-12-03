@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         setUser({
           id: userData.id,
           email: userData.email,
-          phone_number: userData.phoneNumber || userData.phone_number,
+          phone_number: userData.phone_number,
           address: userData.address,
           isAdmin: userData.isAdmin || false,
         });
