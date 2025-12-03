@@ -1,10 +1,10 @@
 /* src/Auth.css */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 .auth-container {
   min-height: 100vh;
   display: flex;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #f8f9fa;
   overflow: hidden;
 }
@@ -12,7 +12,8 @@
 /* Left Side - Image */
 .auth-image-side {
   flex: 1;
-  background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1920&q=80');
+  flex-basis: 50%;
+  background-image: url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1920&q=80");
   background-size: cover;
   background-position: center;
   position: relative;
@@ -48,6 +49,7 @@
 /* Right Side - Form */
 .auth-form-side {
   flex: 1;
+  flex-basis: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,13 +147,22 @@
   text-decoration: underline;
 }
 
+.modern-input:-webkit-autofill,
+.modern-input:-webkit-autofill:hover,
+.modern-input:-webkit-autofill:focus,
+.modern-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #333 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .auth-container {
     flex-direction: column;
   }
   .auth-image-side {
-    display: none; /* Hide image on mobile for simpler look */
+    display: none;
   }
   .auth-form-side {
     max-width: 100%;
