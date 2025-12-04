@@ -8,6 +8,7 @@ type AttentionModalProps = {
   onConfirm?: () => void;
   secondaryPath?: string;
   secondaryButton?: string;
+  onCancel?: () => void; // Added for state-based closing
 };
 
 const AttentionModal: React.FC<AttentionModalProps> = ({
@@ -18,6 +19,7 @@ const AttentionModal: React.FC<AttentionModalProps> = ({
   onConfirm,
   secondaryPath,
   secondaryButton,
+  onCancel,
 }) => {
   const navigate = useNavigate();
 
@@ -26,6 +28,14 @@ const AttentionModal: React.FC<AttentionModalProps> = ({
       onConfirm();
     } else if (path) {
       navigate(path);
+    }
+  };
+
+  const handleSecondaryClick = () => {
+    if (onCancel) {
+      onCancel();
+    } else if (secondaryPath) {
+      navigate(secondaryPath);
     }
   };
 
@@ -75,10 +85,10 @@ const AttentionModal: React.FC<AttentionModalProps> = ({
         </button>
 
         {/* Secondary Button */}
-        {secondaryPath && secondaryButton && (
+        {(secondaryButton && (secondaryPath || onCancel)) && (
           <div style={{ marginTop: "1rem" }}>
             <button
-              onClick={() => navigate(secondaryPath)}
+              onClick={handleSecondaryClick}
               style={{
                 background: "none",
                 border: "none",

@@ -7,6 +7,9 @@ import Footer from "../../components/Footer";
 import { apiRequest, fetchRestaurantsData } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import type { Booking } from "../../lib/types";
+import SuccessModal from "../../components/modals/SuccessModal";
+import AttentionModal from "../../components/modals/AttentionModal";
+import ErrorModal from "../../components/modals/ErrorModal";
 
 const RestaurantBookings: React.FC = () => {
   const { restaurantId } = useParams();
@@ -18,24 +21,27 @@ const RestaurantBookings: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [restaurantName, setRestaurantName] = useState<string>("");
 
-  // Modal State
+  // Modal State for details
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  
+  // State for Processing
   const [processingId, setProcessingId] = useState<string | null>(null);
+
+  // State for Action Modals
+  const [confirmAction, setConfirmAction] = useState<{ id: string; action: "accept" | "reject" } | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const brandColor = "#b2744c";
 
   // Helper to normalize status to number
   const normalizeStatus = (status: any): number => {
-    // If it's already a number or a numeric string (e.g. "1", "-1")
     const num = Number(status);
     if (!isNaN(num) && typeof status !== "string") return num;
-
-    // Check string values
     const s = String(status).toLowerCase();
     if (s === "confirmed" || s === "accepted" || s === "1") return 1;
     if (s === "rejected" || s === "denied" || s === "0") return 0;
     if (s === "pending" || s === "-1") return -1;
-
     return -1;
   };
 
@@ -65,14 +71,11 @@ const RestaurantBookings: React.FC = () => {
     try {
       let url = `/admin/restaurant/${restaurantId}/booking`;
 
-      // Define target status for API and Client-side check
       let targetStatus: number | null = null;
       if (filterStatus === "pending") targetStatus = -1;
-      if (filterStatus === "confirmed" || filterStatus === "accepted")
-        targetStatus = 1;
+      if (filterStatus === "confirmed" || filterStatus === "accepted") targetStatus = 1;
       if (filterStatus === "rejected") targetStatus = 0;
 
-      // Append to URL if not 'all'
       if (targetStatus !== null) {
         url += `?booking_status=${targetStatus}`;
       }
@@ -86,17 +89,12 @@ const RestaurantBookings: React.FC = () => {
         const result = await response.json();
         let dataArray = Array.isArray(result) ? result : result.data || [];
 
-        // --- FIX: Client-side Filtering Fallback ---
-        // Some backends treat param=0 as false/null and return all data.
-        // We filter here to ensure the view is correct.
         if (targetStatus !== null) {
           dataArray = dataArray.filter((b: any) => {
             return normalizeStatus(b.booking_status) === targetStatus;
           });
         }
-        // -------------------------------------------
 
-        // Sort by date (newest first)
         const sorted = dataArray.sort(
           (a: any, b: any) =>
             new Date(b.reservation_time).getTime() -
@@ -120,39 +118,48 @@ const RestaurantBookings: React.FC = () => {
     }
   }, [restaurantId, token, filterStatus, authLoading, user]);
 
-  const handleAction = async (
+  // 1. User clicks Accept/Reject -> Opens AttentionModal
+  const promptAction = (
     bookingId: string,
     action: "accept" | "reject",
     e?: React.MouseEvent
   ) => {
     if (e) e.stopPropagation();
+    setConfirmAction({ id: bookingId, action });
+  };
 
-    if (
-      !window.confirm(
-        `${action === "accept" ? "Accept" : "Reject"} this booking?`
-      )
-    )
-      return;
+  // 2. User confirms in AttentionModal -> Executes API
+  const executeAction = async () => {
+    if (!confirmAction) return;
+    const { id, action } = confirmAction;
 
-    setProcessingId(bookingId);
+    setProcessingId(id);
+    setConfirmAction(null); // Close confirmation modal
+
     try {
       const response = await apiRequest(
-        `/admin/booking/${bookingId}/${action}`,
+        `/admin/booking/${id}/${action}`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (response.ok) {
-        if (selectedBooking?.booking_id === bookingId) setSelectedBooking(null);
-        fetchBookings(); // Refresh list
+        // Close detail modal if it's the one being modified
+        if (selectedBooking?.booking_id === id) setSelectedBooking(null);
+        
+        // Refresh list
+        await fetchBookings();
+        
+        // Show Success Modal
+        setSuccessMessage(`Booking has been ${action === "accept" ? "accepted" : "rejected"} successfully.`);
       } else {
         const err = await response.json();
-        alert(err.detail || `Failed to ${action} booking.`);
+        setErrorMessage(err.detail || `Failed to ${action} booking.`);
       }
     } catch (e) {
       console.error(e);
-      alert("Network error.");
+      setErrorMessage("A network error occurred while processing the request.");
     } finally {
       setProcessingId(null);
     }
@@ -183,7 +190,7 @@ const RestaurantBookings: React.FC = () => {
     <div className="d-flex flex-column min-vh-100 bg-light">
       <Navbar />
 
-      {/* --- HEADER GRADIENT WITH BREADCRUMBS --- */}
+      {/* --- HEADER --- */}
       <div
         className="position-relative d-flex align-items-center"
         style={{
@@ -192,7 +199,6 @@ const RestaurantBookings: React.FC = () => {
         }}
       >
         <div className="container pb-5">
-          {/* Breadcrumbs */}
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-3">
               <li className="breadcrumb-item">
@@ -212,7 +218,6 @@ const RestaurantBookings: React.FC = () => {
             </ol>
           </nav>
 
-          {/* Page Title */}
           <h2 className="display-5 fw-bold text-white font-playfair mb-2">
             Booking Management
           </h2>
@@ -231,7 +236,7 @@ const RestaurantBookings: React.FC = () => {
         style={{ marginTop: "-80px", marginBottom: "60px" }}
       >
         <div className="card border-0 shadow-lg overflow-hidden h-100">
-          {/* --- CARD HEADER --- */}
+          {/* --- TABS --- */}
           <div className="card-header bg-white p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
               <h4 className="fw-bold font-playfair mb-1">Request List</h4>
@@ -240,7 +245,6 @@ const RestaurantBookings: React.FC = () => {
               </p>
             </div>
 
-            {/* --- TABS --- */}
             <ul className="nav nav-pills custom-tabs d-flex gap-2 flex-wrap">
               {[
                 { id: "all", label: "All" },
@@ -319,7 +323,6 @@ const RestaurantBookings: React.FC = () => {
                       }
                     >
                       <div className="row align-items-center g-3">
-                        {/* Avatar / Icon */}
                         <div className="col-auto">
                           <div
                             className="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary"
@@ -333,7 +336,6 @@ const RestaurantBookings: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Info */}
                         <div className="col-md-4">
                           <h6 className="fw-bold mb-1 text-dark">
                             {displayName}
@@ -344,7 +346,6 @@ const RestaurantBookings: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Date & Guests */}
                         <div className="col-md-3">
                           <div className="d-flex flex-column">
                             <span className="fw-bold text-dark mb-1">
@@ -360,14 +361,13 @@ const RestaurantBookings: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Actions / Status */}
                         <div className="col-md-3 ms-auto text-end">
                           {isPending && (
                             <div className="d-flex justify-content-end gap-2">
                               <button
                                 className="btn btn-sm btn-success fw-bold px-3 shadow-sm"
                                 onClick={(e) =>
-                                  handleAction(booking.booking_id, "accept", e)
+                                  promptAction(booking.booking_id, "accept", e)
                                 }
                                 disabled={processingId === booking.booking_id}
                                 title="Accept"
@@ -377,7 +377,7 @@ const RestaurantBookings: React.FC = () => {
                               <button
                                 className="btn btn-sm btn-outline-danger fw-bold px-3 shadow-sm"
                                 onClick={(e) =>
-                                  handleAction(booking.booking_id, "reject", e)
+                                  promptAction(booking.booking_id, "reject", e)
                                 }
                                 disabled={processingId === booking.booking_id}
                                 title="Reject"
@@ -396,7 +396,6 @@ const RestaurantBookings: React.FC = () => {
                               Rejected
                             </span>
                           )}
-                          {/* Fallback for other status */}
                           {!isPending && !isAccepted && !isRejected && (
                             <span className="badge bg-secondary">
                               Unknown ({status})
@@ -503,7 +502,7 @@ const RestaurantBookings: React.FC = () => {
                 <button
                   className="btn btn-outline-danger flex-fill fw-bold py-2"
                   onClick={() =>
-                    handleAction(selectedBooking.booking_id, "reject")
+                    promptAction(selectedBooking.booking_id, "reject")
                   }
                 >
                   Reject
@@ -511,7 +510,7 @@ const RestaurantBookings: React.FC = () => {
                 <button
                   className="btn btn-success flex-fill fw-bold py-2 shadow-sm"
                   onClick={() =>
-                    handleAction(selectedBooking.booking_id, "accept")
+                    promptAction(selectedBooking.booking_id, "accept")
                   }
                 >
                   Accept Booking
@@ -520,6 +519,38 @@ const RestaurantBookings: React.FC = () => {
             )}
           </div>
         </div>
+      )}
+
+      {/* --- CONFIRM ACTION MODAL --- */}
+      {confirmAction && (
+        <AttentionModal
+          title={`Confirm ${confirmAction.action === "accept" ? "Acceptance" : "Rejection"}`}
+          content={`Are you sure you want to ${confirmAction.action} this booking?`}
+          button={`Yes, ${confirmAction.action}`}
+          onConfirm={executeAction}
+          secondaryButton="Cancel"
+          onCancel={() => setConfirmAction(null)} 
+        />
+      )}
+
+      {/* --- SUCCESS MODAL --- */}
+      {successMessage && (
+        <SuccessModal
+          title="Success"
+          content={successMessage}
+          button="OK"
+          onConfirm={() => setSuccessMessage(null)}
+        />
+      )}
+
+      {/* --- ERROR MODAL --- */}
+      {errorMessage && (
+        <ErrorModal
+          title="Error"
+          content={errorMessage}
+          button="Close"
+          onConfirm={() => setErrorMessage(null)}
+        />
       )}
 
       <Footer />
