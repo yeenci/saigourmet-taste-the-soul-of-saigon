@@ -32,12 +32,13 @@ const Navbar: React.FC = () => {
     navigate("/login");
   };
 
-  // useEffect( () => {
-  //       if (user) {
-  //           console.log("Navbar User Data:", user);
-  //       }
-  //   }
-  // );
+  useEffect( () => {
+        if (user) {
+            console.log("Navbar User Data:", user);
+            console.log("is this Admin: ", user.isAdmin)
+        }
+    }
+  );
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -228,33 +229,65 @@ const Navbar: React.FC = () => {
                         </div>
                       </Link>
 
-                      <Link
-                        to="/booking-history"
-                        className="dropdown-item px-4 py-2 d-flex align-items-center gap-3"
-                        onClick={closeUserMenu}
-                      >
-                        <div
-                          className="rounded-circle bg-light d-flex align-items-center justify-content-center"
-                          style={{
-                            width: "35px",
-                            height: "35px",
-                            color: brandColor,
-                          }}
+                      {user.isAdmin && (
+                        <Link
+                          to="/admin/dashboard"
+                          className="dropdown-item px-4 py-2 d-flex align-items-center gap-3"
+                          onClick={closeUserMenu}
                         >
-                          <i className="fa fa-clock-o"></i>
-                        </div>
-                        <div>
-                          <span className="d-block fw-semibold">
-                            Booking History
-                          </span>
-                          <small
-                            className="text-muted"
-                            style={{ fontSize: "0.8rem" }}
+                          <div
+                            className="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "35px",
+                              height: "35px",
+                              color: brandColor,
+                            }}
                           >
-                            Past orders
-                          </small>
-                        </div>
-                      </Link>
+                            <i className="fa fa-home"></i>
+                          </div>
+                          <div>
+                            <span className="d-block fw-semibold">
+                              My Restaurants
+                            </span>
+                            <small
+                              className="text-muted"
+                              style={{ fontSize: "0.8rem" }}
+                            >
+                              {/* Which text to be here */}
+                            </small>
+                          </div>
+                        </Link>
+                      )}
+
+                      {!user.isAdmin && (
+                        <Link
+                          to="/booking-history"
+                          className="dropdown-item px-4 py-2 d-flex align-items-center gap-3"
+                          onClick={closeUserMenu}
+                        >
+                          <div
+                            className="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "35px",
+                              height: "35px",
+                              color: brandColor,
+                            }}
+                          >
+                            <i className="fa fa-clock-o"></i>
+                          </div>
+                          <div>
+                            <span className="d-block fw-semibold">
+                              Booking History
+                            </span>
+                            <small
+                              className="text-muted"
+                              style={{ fontSize: "0.8rem" }}
+                            >
+                              Past orders
+                            </small>
+                          </div>
+                        </Link>
+                      )}
                     </div>
 
                     {/* Footer / Logout */}

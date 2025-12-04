@@ -31,7 +31,7 @@ export interface Booking {
   reservation_time: string;
   num_of_guests: number;
   note: string;
-  booking_status: -1 | 0 | 1;
+  booking_status: "PENDING" | "REJECTED" | "ACCEPTED";
 }
 
 export interface Article {

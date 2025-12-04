@@ -740,8 +740,8 @@ const BookingHistory: React.FC = () => {
                     className="btn btn-outline-primary flex-grow-1 fw-bold"
                     onClick={() => handleEditClick(selectedBooking)}
                     disabled={
-                      selectedBooking.booking_status === 0 || // Denied
-                      selectedBooking.booking_status === 1
+                      selectedBooking.booking_status === "REJECTED" ||
+                      selectedBooking.booking_status === "ACCEPTED"
                     }
                   >
                     <i className="fa fa-pencil me-2"></i> Update
