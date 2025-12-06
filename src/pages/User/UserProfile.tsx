@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
@@ -32,7 +33,6 @@ const UserProfile: React.FC = () => {
     if (!isLoading && !user) {
       navigate("/login");
     } else if (user) {
-      // Check if there is saved session data after an error
       const savedData = sessionStorage.getItem("userFormData");
       if (savedData) {
         setFormData(JSON.parse(savedData));
@@ -50,6 +50,36 @@ const UserProfile: React.FC = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaveLoading(true);
+
+    // --- STEP 1: Verify Password (Security Check) ---
+    try {
+      // We try to "Login" with the entered password to see if it is correct
+      const loginParams = new URLSearchParams();
+      loginParams.append("username", user?.email || "");
+      loginParams.append("password", formData.password);
+      loginParams.append("grant_type", "password");
+
+      const verifyRes = await apiRequest("/auth/login", {
+        method: "POST",
+        body: loginParams,
+      });
+
+      if (!verifyRes.ok) {
+        // If login fails, the password is WRONG
+        setErrorMessage("Incorrect password. Please enter your current password to save changes.");
+        setShowErrorModal(true);
+        setSaveLoading(false);
+        return; // STOP execution here
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Could not verify identity. Please check your connection.");
+      setShowErrorModal(true);
+      setSaveLoading(false);
+      return;
+    }
+
+    // --- STEP 2: Password is Correct, Proceed to Update ---
     try {
       const res = await apiRequest("/user/update", {
         method: "PUT",
@@ -61,18 +91,18 @@ const UserProfile: React.FC = () => {
           email: formData.email,
           phone_number: formData.phone_number,
           address: formData.address,
-          password: formData.password,
+          // We send the password back to the server to satisfy schema, 
+          // or to update it (since it's the same as current, it won't change anything)
+          password: formData.password, 
         }),
       });
 
       if (res.ok) {
-        // Success: Clear session storage if it existed
         sessionStorage.removeItem("userFormData");
         setIsEditing(false);
         setShowSuccessModal(true);
       } else {
         const data = await res.json();
-        // Error: Save data to session
         sessionStorage.setItem("userFormData", JSON.stringify(formData));
         setErrorMessage(
           data.detail || data.message || "Failed to update profile."
@@ -80,7 +110,6 @@ const UserProfile: React.FC = () => {
         setShowErrorModal(true);
       }
     } catch (err) {
-      // Network Error: Save data to session
       sessionStorage.setItem("userFormData", JSON.stringify(formData));
       setErrorMessage("Network error. Please try again later.");
       setShowErrorModal(true);
@@ -268,7 +297,7 @@ const UserProfile: React.FC = () => {
                             <i className="fa fa-lock me-2"></i>Security Check
                           </label>
                           <p className="small text-muted mb-2">
-                            Please enter your password to confirm these changes.
+                            Please enter your current password to confirm these changes.
                           </p>
                           <input
                             type="password"
@@ -295,6 +324,7 @@ const UserProfile: React.FC = () => {
                         className="btn btn-light text-muted fw-bold px-4"
                         onClick={() => {
                           setIsEditing(false);
+                          // Reset form to user data
                           setFormData({
                             email: user.email || "",
                             phone_number: user.phone_number || "",
@@ -318,7 +348,7 @@ const UserProfile: React.FC = () => {
                               role="status"
                               aria-hidden="true"
                             ></span>
-                            Saving...
+                            Verifying...
                           </>
                         ) : (
                           "Save Changes"

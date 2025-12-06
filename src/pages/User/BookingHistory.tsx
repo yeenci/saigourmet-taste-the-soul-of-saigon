@@ -8,6 +8,21 @@ import { useAuth } from "../../context/AuthContext";
 import { apiRequest, fetchRestaurantsData } from "../../lib/utils";
 import type { Booking, Restaurant } from "../../lib/types";
 
+// Import Custom Modals
+import AttentionModal from "../../components/modals/AttentionModal";
+import SuccessModal from "../../components/modals/SuccessModal";
+import ErrorModal from "../../components/modals/ErrorModal";
+
+// Define Modal Config Interface
+interface ModalConfig {
+  type: "success" | "error" | "attention" | null;
+  title: string;
+  content: string;
+  button: string;
+  onConfirm?: () => void;
+  onCancel?: () => void; // Added for AttentionModal cancellation
+}
+
 const BookingHistory: React.FC = () => {
   const { user, token, isLoading, logout } = useAuth();
   const navigate = useNavigate();
@@ -24,6 +39,14 @@ const BookingHistory: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [editFormData, setEditFormData] = useState<Partial<Booking>>({});
 
+  // Modal State
+  const [modalConfig, setModalConfig] = useState<ModalConfig>({
+    type: null,
+    title: "",
+    content: "",
+    button: "",
+  });
+
   // Brand color constant
   const brandColor = "#b2744c";
 
@@ -31,6 +54,9 @@ const BookingHistory: React.FC = () => {
   useEffect(() => {
     if (!isLoading && !user) {
       navigate("/login");
+    }
+    if (user?.isAdmin) {
+      navigate("/");
     }
   }, [isLoading, user, navigate]);
 
@@ -83,14 +109,25 @@ const BookingHistory: React.FC = () => {
     }
   }, [user, token]);
 
-  // Delete
-  const handleDelete = async (bookingId: string) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to cancel and delete this booking?"
-      )
-    )
-      return;
+  const closeModal = () => {
+    setModalConfig({ ...modalConfig, type: null });
+  };
+
+  // --- DELETE LOGIC ---
+
+  const confirmDelete = (bookingId: string) => {
+    setModalConfig({
+      type: "attention",
+      title: "Cancel Booking?",
+      content: "Are you sure you want to cancel and delete this booking? This action cannot be undone.",
+      button: "Yes, Cancel It",
+      onConfirm: () => performDelete(bookingId),
+      onCancel: closeModal,
+    });
+  };
+
+  const performDelete = async (bookingId: string) => {
+    closeModal(); // Close confirmation modal
     setIsDeleting(true);
     try {
       const response = await apiRequest(`/user/booking/${bookingId}`, {
@@ -103,20 +140,39 @@ const BookingHistory: React.FC = () => {
       if (response.ok) {
         setBookings((prev) => prev.filter((b) => b.booking_id !== bookingId));
         setSelectedBooking(null);
-        alert("Booking cancelled successfully.");
+        setModalConfig({
+            type: "success",
+            title: "Booking Cancelled",
+            content: "Your booking has been successfully cancelled.",
+            button: "Okay",
+            onConfirm: closeModal,
+        });
       } else {
         const err = await response.json();
-        alert(err.detail || "Failed to delete booking.");
+        const msg = err.detail || "Failed to delete booking.";
+        setModalConfig({
+            type: "error",
+            title: "Cancellation Failed",
+            content: msg,
+            button: "Close",
+            onConfirm: closeModal,
+        });
       }
     } catch (error) {
       console.error("Delete error", error);
-      alert("Network error while deleting.");
+      setModalConfig({
+        type: "error",
+        title: "Network Error",
+        content: "An error occurred while trying to delete the booking.",
+        button: "Close",
+        onConfirm: closeModal,
+      });
     } finally {
       setIsDeleting(false);
     }
   };
 
-  // Edit
+  // --- EDIT LOGIC ---
   const handleEditClick = (booking: Booking) => {
     setEditFormData({
       name: booking.name,
@@ -191,15 +247,36 @@ const BookingHistory: React.FC = () => {
 
         setSelectedBooking(updatedBooking);
         setIsEditing(false);
-        alert("Booking updated successfully!");
+        
+        setModalConfig({
+            type: "success",
+            title: "Update Successful",
+            content: "Your booking details have been updated.",
+            button: "Okay",
+            onConfirm: closeModal,
+        });
       } else {
         const errorData = await response.json();
         const errorMessage = errorData.detail || "Failed to update booking.";
-        alert(Array.isArray(errorMessage) ? errorMessage[0].msg : errorMessage);
+        const displayMsg = Array.isArray(errorMessage) ? errorMessage[0].msg : errorMessage;
+        
+        setModalConfig({
+            type: "error",
+            title: "Update Failed",
+            content: displayMsg,
+            button: "Try Again",
+            onConfirm: closeModal,
+        });
       }
     } catch (error) {
       console.error("Update error", error);
-      alert("Network error. Please try again.");
+      setModalConfig({
+        type: "error",
+        title: "Network Error",
+        content: "Unable to connect to the server. Please check your connection.",
+        button: "Close",
+        onConfirm: closeModal,
+      });
     } finally {
       setIsSaving(false);
     }
@@ -298,6 +375,46 @@ const BookingHistory: React.FC = () => {
     }
   };
 
+  // Helper to render the active result modal
+  const renderResultModal = () => {
+    if (!modalConfig.type) return null;
+
+    if (modalConfig.type === "success") {
+      return (
+        <SuccessModal
+          title={modalConfig.title}
+          content={modalConfig.content}
+          button={modalConfig.button}
+          onConfirm={modalConfig.onConfirm}
+        />
+      );
+    }
+
+    if (modalConfig.type === "error") {
+      return (
+        <ErrorModal
+          title={modalConfig.title}
+          content={modalConfig.content}
+          button={modalConfig.button}
+          onConfirm={modalConfig.onConfirm}
+        />
+      );
+    }
+
+    if (modalConfig.type === "attention") {
+      return (
+        <AttentionModal
+          title={modalConfig.title}
+          content={modalConfig.content}
+          button={modalConfig.button}
+          onConfirm={modalConfig.onConfirm}
+          onCancel={modalConfig.onCancel} // Pass cancel handler
+          secondaryButton="Cancel" // Explicitly show cancel button
+        />
+      );
+    }
+  };
+
   const filteredBookings =
     activeTab === "ALL"
       ? bookings
@@ -322,6 +439,9 @@ const BookingHistory: React.FC = () => {
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
       <Navbar />
+
+      {/* Render Modal */}
+      {renderResultModal()}
 
       {/* Header Banner */}
       <div
@@ -748,14 +868,14 @@ const BookingHistory: React.FC = () => {
                   </button>
                   <button
                     className="btn btn-danger flex-grow-1 fw-bold"
-                    onClick={() => handleDelete(selectedBooking.booking_id)}
+                    onClick={() => confirmDelete(selectedBooking.booking_id)}
                     disabled={isDeleting}
                   >
                     {isDeleting ? (
                       <i className="fa fa-spinner fa-spin"></i>
                     ) : (
                       <>
-                        <i className="fa fa-trash me-2"></i> Delete
+                        <i className="fa fa-trash me-2"></i> Cancel Booking
                       </>
                     )}
                   </button>

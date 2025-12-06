@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { Restaurant } from "../lib/types";
 import { fetchRestaurantsData } from "../lib/utils";
+import { useAuth } from "../context/AuthContext";
 
 const TopRestaurants: React.FC = () => {
+  const { user } = useAuth();
   const [topRestaurants, setTopRestaurants] = useState<Restaurant[]>([]);
 
   useEffect(() => {
@@ -129,29 +128,47 @@ const TopRestaurants: React.FC = () => {
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Action Button Logic */}
               <div className="mt-auto pt-3 border-top">
-                <Link
-                  to={`/booking/${
-                    restaurant.restaurantId
-                  }?restaurant_name=${encodeURIComponent(restaurant.name)}`}
-                  className="btn btn-outline-dark w-100 rounded-pill fw-bold"
-                  style={{
-                    borderColor: "#b2744c",
-                    color: "#b2744c",
-                    transition: "all 0.3s ease",
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = "#b2744c";
-                    e.currentTarget.style.color = "white";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "#b2744c";
-                  }}
-                >
-                  Book Table
-                </Link>
+                {user?.isAdmin ? (
+                  <button
+                    className="btn btn-secondary w-100 rounded-pill fw-bold"
+                    disabled
+                    style={{
+                      cursor: "not-allowed",
+                      opacity: 0.7,
+                      backgroundColor: "#e9ecef",
+                      color: "#6c757d",
+                      borderColor: "#dee2e6",
+                    }}
+                    title="Administrators cannot make bookings"
+                  >
+                    <i className="fa fa-ban me-2"></i>
+                    View Only
+                  </button>
+                ) : (
+                  <Link
+                    to={`/booking/${
+                      restaurant.restaurantId
+                    }?restaurant_name=${encodeURIComponent(restaurant.name)}`}
+                    className="btn btn-outline-dark w-100 rounded-pill fw-bold"
+                    style={{
+                      borderColor: "#b2744c",
+                      color: "#b2744c",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "#b2744c";
+                      e.currentTarget.style.color = "white";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "#b2744c";
+                    }}
+                  >
+                    Book Table
+                  </Link>
+                )}
               </div>
             </div>
           </div>

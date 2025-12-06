@@ -6,8 +6,11 @@ import Footer from "../components/Footer";
 import type { Restaurant } from "../lib/types";
 import { CATEGORIES, DISTRICTS } from "../lib/constants";
 import { fetchRestaurantsData } from "../lib/utils";
+import { useAuth } from "../context/AuthContext";
 
 const AllRestaurants: React.FC = () => {
+  const { user } = useAuth();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
 
@@ -47,7 +50,7 @@ const AllRestaurants: React.FC = () => {
       );
     }
 
-    console.log("District: " , filterDistrict)
+    console.log("District: ", filterDistrict);
 
     if (filterDistrict !== "All") {
       const selectedDistObj = DISTRICTS.find(
@@ -55,14 +58,14 @@ const AllRestaurants: React.FC = () => {
       );
 
       if (selectedDistObj) {
-        filtered = filtered.filter((r) =>
-          r.district?.trim() === selectedDistObj.name
+        filtered = filtered.filter(
+          (r) => r.district?.trim() === selectedDistObj.name
         );
       }
     }
 
     if (filterCategory !== "All") {
-    console.log("Category: " , filterCategory)
+      console.log("Category: ", filterCategory);
       const selectedCatObj = CATEGORIES.find(
         (c) => String(c.categoryId) === String(filterCategory)
       );
@@ -272,7 +275,7 @@ const AllRestaurants: React.FC = () => {
                                 style={{ width: "15px" }}
                               ></i>
                               <span className="text-truncate">
-                                {restaurant.address}, {restaurant.district}
+                                {restaurant.address}
                               </span>
                             </div>
                             <div className="d-flex align-items-center">
@@ -286,26 +289,48 @@ const AllRestaurants: React.FC = () => {
                             </div>
                           </div>
 
-                          <Link
-                            to={`/booking/${
-                              restaurant.restaurantId
-                            }?restaurant_name=${encodeURIComponent(
-                              restaurant.name
-                            )}`}
-                            className="btn btn-outline-primary w-100 fw-bold rounded-pill"
-                            style={{ borderColor: "#b2744c", color: "#b2744c" }}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "#b2744c";
-                              e.currentTarget.style.color = "white";
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor =
-                                "transparent";
-                              e.currentTarget.style.color = "#b2744c";
-                            }}
-                          >
-                            Book Table
-                          </Link>
+                          {user?.isAdmin ? (
+                            <button
+                              className="btn btn-secondary w-100 rounded-pill fw-bold"
+                              disabled
+                              style={{
+                                cursor: "not-allowed",
+                                opacity: 0.7,
+                                backgroundColor: "#e9ecef",
+                                color: "#6c757d",
+                                borderColor: "#dee2e6",
+                              }}
+                              title="Administrators cannot make bookings"
+                            >
+                              <i className="fa fa-ban me-2"></i>
+                              View Only
+                            </button>
+                          ) : (
+                            <Link
+                              to={`/booking/${
+                                restaurant.restaurantId
+                              }?restaurant_name=${encodeURIComponent(
+                                restaurant.name
+                              )}`}
+                              className="btn btn-outline-primary w-100 fw-bold rounded-pill"
+                              style={{
+                                borderColor: "#b2744c",
+                                color: "#b2744c",
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                  "#b2744c";
+                                e.currentTarget.style.color = "white";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.backgroundColor =
+                                  "transparent";
+                                e.currentTarget.style.color = "#b2744c";
+                              }}
+                            >
+                              Book Table
+                            </Link>
+                          )}
                         </div>
                       </div>
                     </div>

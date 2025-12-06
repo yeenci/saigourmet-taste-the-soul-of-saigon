@@ -435,7 +435,7 @@ const Navbar: React.FC = () => {
                   {[
                     { path: "/profile", icon: "user", label: "My Profile" },
                     {
-                      path: "/admin/restaurants",
+                      path: "/admin/dashboard",
                       icon: "coffee",
                       label: "My Restaurants",
                     },

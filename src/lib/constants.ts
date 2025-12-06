@@ -1,4 +1,4 @@
-import type { Article, Category, District } from "./types";
+import type { Category, District } from "./types";
 
 export const CATEGORIES: Category[] = [
   {
@@ -121,8 +121,6 @@ export const CATEGORIES: Category[] = [
       "https://images.unsplash.com/photo-1503764654157-72d979d9af2f?auto=format&fit=crop&w=500&q=60",
   },
 ];
-
-export const ARTICLE: Article[] = [];
 
 export const DISTRICTS: District[] = [
   {

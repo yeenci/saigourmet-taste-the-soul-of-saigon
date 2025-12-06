@@ -6,14 +6,37 @@ import { CATEGORIES, DISTRICTS } from "../../lib/constants";
 import { apiRequest } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 
+// Import Custom Modals
+import AttentionModal from "../../components/modals/AttentionModal";
+import SuccessModal from "../../components/modals/SuccessModal";
+import ErrorModal from "../../components/modals/ErrorModal";
+
+// Define Modal Config Interface
+interface ModalConfig {
+  type: "success" | "error" | "attention" | null;
+  title: string;
+  content: string;
+  button: string;
+  path?: string;
+  onConfirm?: () => void;
+}
+
 const CreateRestaurant: React.FC = () => {
   const navigate = useNavigate();
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(false);
 
+  // Modal State
+  const [modalConfig, setModalConfig] = useState<ModalConfig>({
+    type: null,
+    title: "",
+    content: "",
+    button: "",
+  });
+
   useEffect(() => {
     if (user && !user.isAdmin) {
-      navigate("/");
+      navigate("/you-are-not-allowed-to-create-restaurants");
     }
   }, [user, navigate]);
 
@@ -21,12 +44,12 @@ const CreateRestaurant: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     address: "",
-    district_id: 1, // Default ID
-    openTime: "", // HH:mm
-    closeTime: "", // HH:mm
-    rating: 5, // Default rating
+    district_id: 1,
+    openTime: "",
+    closeTime: "",
+    rating: 5,
     image_url: "",
-    selectedCategories: [] as number[], // IDs
+    selectedCategories: [] as number[],
   });
 
   const handleChange = (
@@ -57,28 +80,44 @@ const CreateRestaurant: React.FC = () => {
     });
   };
 
+  const closeModal = () => {
+    setModalConfig({ ...modalConfig, type: null });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    // Validation: Check Categories
     if (formData.selectedCategories.length === 0) {
-      alert("Please select at least one category.");
+      setModalConfig({
+        type: "attention",
+        title: "Missing Category",
+        content:
+          "Please select at least one category to describe your restaurant.",
+        button: "Okay",
+        onConfirm: closeModal,
+      });
       setLoading(false);
       return;
     }
 
-    // FIX: Timezone conversion issue.
-    // Instead of converting Local -> UTC (which subtracts 7 hours in VN),
-    // We construct the date using Date.UTC with the input hours/minutes.
-    // This ensures toISOString() outputs exactly "T07:00:00.000Z" for an input of "07:00".
     const formatToIso = (timeStr: string) => {
       if (!timeStr) return new Date().toISOString();
       const now = new Date();
       const [hours, minutes] = timeStr.split(":").map(Number);
-      
+
       // Create date object treating input values as UTC components
-      const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes));
-      
+      const utcDate = new Date(
+        Date.UTC(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          hours,
+          minutes
+        )
+      );
+
       return utcDate.toISOString();
     };
 
@@ -105,27 +144,87 @@ const CreateRestaurant: React.FC = () => {
       });
 
       if (response.ok) {
-        alert("Restaurant created successfully!");
-        navigate("/admin/dashboard");
+        setModalConfig({
+          type: "success",
+          title: "Restaurant Created!",
+          content: `${formData.name} has been successfully added to the system.`,
+          button: "Go to Dashboard",
+          path: "/admin/dashboard", // SuccessModal will handle navigation
+        });
       } else {
         const data = await response.json();
-        alert(
-          `Error: ${
-            data.detail ? JSON.stringify(data.detail) : "Failed to create"
-          }`
-        );
+        const errorMsg = data.detail
+          ? JSON.stringify(data.detail)
+          : "Failed to create restaurant.";
+
+        setModalConfig({
+          type: "error",
+          title: "Creation Failed",
+          content: `Server Error: ${errorMsg}`,
+          button: "Try Again",
+          onConfirm: closeModal,
+        });
       }
     } catch (err) {
       console.error(err);
-      alert("Network error.");
+      setModalConfig({
+        type: "error",
+        title: "Network Error",
+        content:
+          "Unable to connect to the server. Please check your internet connection.",
+        button: "Close",
+        onConfirm: closeModal,
+      });
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper to render the active result modal
+  const renderResultModal = () => {
+    if (!modalConfig.type) return null;
+
+    if (modalConfig.type === "success") {
+      return (
+        <SuccessModal
+          title={modalConfig.title}
+          content={modalConfig.content}
+          button={modalConfig.button}
+          path={modalConfig.path}
+          onConfirm={modalConfig.onConfirm}
+        />
+      );
+    }
+
+    if (modalConfig.type === "error") {
+      return (
+        <ErrorModal
+          title={modalConfig.title}
+          content={modalConfig.content}
+          button={modalConfig.button}
+          onConfirm={modalConfig.onConfirm}
+        />
+      );
+    }
+
+    if (modalConfig.type === "attention") {
+      return (
+        <AttentionModal
+          title={modalConfig.title}
+          content={modalConfig.content}
+          button={modalConfig.button}
+          onConfirm={modalConfig.onConfirm}
+        />
+      );
     }
   };
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-column">
       <Navbar />
+
+      {/* Render Modal */}
+      {renderResultModal()}
 
       <div className="container my-5" style={{ maxWidth: "900px" }}>
         <div className="card border-0 shadow-lg rounded-3 overflow-hidden">
