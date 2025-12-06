@@ -47,17 +47,22 @@ const AllRestaurants: React.FC = () => {
       );
     }
 
+    console.log("District: " , filterDistrict)
+
     if (filterDistrict !== "All") {
       const selectedDistObj = DISTRICTS.find(
-        (d) => String(d.districtId) === String(filterDistrict)
+        (c) => String(c.districtId) === String(filterDistrict)
       );
 
       if (selectedDistObj) {
-        filtered.filter((r) => r.district === selectedDistObj.name);
+        filtered = filtered.filter((r) =>
+          r.district?.trim() === selectedDistObj.name
+        );
       }
     }
 
     if (filterCategory !== "All") {
+    console.log("Category: " , filterCategory)
       const selectedCatObj = CATEGORIES.find(
         (c) => String(c.categoryId) === String(filterCategory)
       );
@@ -75,19 +80,19 @@ const AllRestaurants: React.FC = () => {
   // Handle Search Input
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset page immediately
+    setCurrentPage(1);
   };
 
   // Handle District Filter
   const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterDistrict(e.target.value);
-    setCurrentPage(1); // Reset page immediately
+    setCurrentPage(1);
   };
 
   // Handle Category Filter
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterCategory(e.target.value);
-    setCurrentPage(1); // Reset page immediately
+    setCurrentPage(1);
   };
 
   // Handle Reset Button
@@ -95,7 +100,7 @@ const AllRestaurants: React.FC = () => {
     setSearchTerm("");
     setFilterDistrict("All");
     setFilterCategory("All");
-    setCurrentPage(1); // Reset page immediately
+    setCurrentPage(1);
   };
 
   useEffect(() => {
