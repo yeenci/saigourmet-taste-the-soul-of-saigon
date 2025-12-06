@@ -32,13 +32,12 @@ const Navbar: React.FC = () => {
     navigate("/login");
   };
 
-  useEffect( () => {
-        if (user) {
-            console.log("Navbar User Data:", user);
-            console.log("is this Admin: ", user.isAdmin)
-        }
+  useEffect(() => {
+    if (user) {
+      console.log("Navbar User Data:", user);
+      console.log("is this Admin: ", user.isAdmin);
     }
-  );
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -243,7 +242,7 @@ const Navbar: React.FC = () => {
                               color: brandColor,
                             }}
                           >
-                            <i className="fa fa-home"></i>
+                            <i className="fa fa-coffee"></i>
                           </div>
                           <div>
                             <span className="d-block fw-semibold">
@@ -253,7 +252,7 @@ const Navbar: React.FC = () => {
                               className="text-muted"
                               style={{ fontSize: "0.8rem" }}
                             >
-                              {/* Which text to be here */}
+                              Restaurant Management
                             </small>
                           </div>
                         </Link>
@@ -400,33 +399,69 @@ const Navbar: React.FC = () => {
 
           <hr className="my-2 opacity-25" />
 
-          <div className="d-flex flex-column gap-1 pb-2">
-            {[
-              { path: "/profile", icon: "user", label: "My Profile" },
-              {
-                path: "/booking-history",
-                icon: "clock-o",
-                label: "Booking History",
-              },
-            ].map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`btn btn-sm text-start fw-semibold py-2 px-3 d-flex align-items-center gap-3 ${
-                  location.pathname === item.path
-                    ? "btn-light text-primary"
-                    : "text-dark bg-white border-0"
-                }`}
-                onClick={closeNav}
-              >
-                <i
-                  className={`fa fa-${item.icon}`}
-                  style={{ width: "20px", textAlign: "center" }}
-                ></i>
-                {item.label}
-              </Link>
-            ))}
-          </div>
+          {user && (
+            <>
+              {!user.isAdmin && (
+                <div className="d-flex flex-column gap-1 pb-2">
+                  {[
+                    { path: "/profile", icon: "user", label: "My Profile" },
+                    {
+                      path: "/booking-history",
+                      icon: "clock-o",
+                      label: "Booking History",
+                    },
+                  ].map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`btn btn-sm text-start fw-semibold py-2 px-3 d-flex align-items-center gap-3 ${
+                        location.pathname === item.path
+                          ? "btn-light text-primary"
+                          : "text-dark bg-white border-0"
+                      }`}
+                      onClick={closeNav}
+                    >
+                      <i
+                        className={`fa fa-${item.icon}`}
+                        style={{ width: "20px", textAlign: "center" }}
+                      ></i>
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {user.isAdmin && (
+                <div className="d-flex flex-column gap-1 pb-2">
+                  {[
+                    { path: "/profile", icon: "user", label: "My Profile" },
+                    {
+                      path: "/admin/restaurants",
+                      icon: "coffee",
+                      label: "My Restaurants",
+                    },
+                  ].map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`btn btn-sm text-start fw-semibold py-2 px-3 d-flex align-items-center gap-3 ${
+                        location.pathname === item.path
+                          ? "btn-light text-primary"
+                          : "text-dark bg-white border-0"
+                      }`}
+                      onClick={closeNav}
+                    >
+                      <i
+                        className={`fa fa-${item.icon}`}
+                        style={{ width: "20px", textAlign: "center" }}
+                      ></i>
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
           {/* User Actions (Mobile) */}
           <div className="d-flex flex-column gap-2">
             {user ? (

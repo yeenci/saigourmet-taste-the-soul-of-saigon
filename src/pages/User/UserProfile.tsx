@@ -74,7 +74,9 @@ const UserProfile: React.FC = () => {
         const data = await res.json();
         // Error: Save data to session
         sessionStorage.setItem("userFormData", JSON.stringify(formData));
-        setErrorMessage(data.detail || data.message || "Failed to update profile.");
+        setErrorMessage(
+          data.detail || data.message || "Failed to update profile."
+        );
         setShowErrorModal(true);
       }
     } catch (err) {
@@ -137,7 +139,7 @@ const UserProfile: React.FC = () => {
                 <h6 className="fw-bold mb-1 text-dark text-truncate">
                   {user.email}
                 </h6>
-                <p className="text-muted small mb-4">Member</p>
+                <p className="text-muted small mb-4">{user.isAdmin ? `Admin` : `Member`}</p>
 
                 <div className="d-grid gap-2 text-start">
                   <button className="btn btn-light fw-bold text-dark d-flex align-items-center justify-content-between active">
@@ -147,15 +149,16 @@ const UserProfile: React.FC = () => {
                     </span>
                     <i className="fa fa-chevron-right small text-muted"></i>
                   </button>
-
-                  <Link
-                    to="/booking-history"
-                    className="btn btn-white text-muted d-flex align-items-center justify-content-between hover-bg-light"
-                  >
-                    <span>
-                      <i className="fa fa-history me-2"></i> History
-                    </span>
-                  </Link>
+                  {!user.isAdmin && (
+                    <Link
+                      to="/booking-history"
+                      className="btn btn-white text-muted d-flex align-items-center justify-content-between hover-bg-light"
+                    >
+                      <span>
+                        <i className="fa fa-history me-2"></i> History
+                      </span>
+                    </Link>
+                  )}
                 </div>
 
                 <hr className="my-4 text-muted opacity-25" />

@@ -49,7 +49,10 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/restaurants" element={<Navigate to="/restaurants/all" replace />} />
+          <Route
+            path="/restaurants"
+            element={<Navigate to="/restaurants/all" replace />}
+          />
           <Route path="/restaurants/all" element={<AllRestaurants />} />
           <Route path="/categories" element={<AllCategories />} />
           <Route path="/category/:id" element={<CategoryPage />} />
@@ -69,8 +72,14 @@ const App: React.FC = () => {
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<RestaurantDashboard />} />
-          <Route path="/admin/create-restaurant" element={<CreateRestaurant />} />
-          <Route path="/admin/restaurant/:restaurantId/bookings" element={<RestaurantBookings />} />
+          <Route
+            path="/admin/create-restaurant"
+            element={<CreateRestaurant />}
+          />
+          <Route
+            path="/admin/restaurant/:restaurantId/bookings"
+            element={<RestaurantBookings />}
+          />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
