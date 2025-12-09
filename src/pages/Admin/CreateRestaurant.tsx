@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { CATEGORIES, DISTRICTS } from "../../lib/constants";
@@ -22,7 +21,6 @@ interface ModalConfig {
 }
 
 const CreateRestaurant: React.FC = () => {
-  const navigate = useNavigate();
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(false);
 
@@ -33,12 +31,6 @@ const CreateRestaurant: React.FC = () => {
     content: "",
     button: "",
   });
-
-  useEffect(() => {
-    if (user && !user.isAdmin) {
-      navigate("/you-are-not-allowed-to-create-restaurants");
-    }
-  }, [user, navigate]);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -51,6 +43,17 @@ const CreateRestaurant: React.FC = () => {
     image_url: "",
     selectedCategories: [] as number[],
   });
+
+  if (user && !user.isAdmin) {
+    return (
+      <AttentionModal
+        title="Restricted Area"
+        content="We're sorry, but only administrators are allowed to add new restaurants. Please return to the home page to continue browsing."
+        button="Return to Home"
+        path="/"
+      />
+    );
+  }
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -149,7 +152,7 @@ const CreateRestaurant: React.FC = () => {
           title: "Restaurant Created!",
           content: `${formData.name} has been successfully added to the system.`,
           button: "Go to Dashboard",
-          path: "/admin/dashboard", // SuccessModal will handle navigation
+          path: "/admin/dashboard",
         });
       } else {
         const data = await response.json();

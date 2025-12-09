@@ -70,7 +70,7 @@ const RestaurantDashboard: React.FC = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user || !user.isAdmin) {
+    if (!user) {
       navigate("/");
       return;
     }
@@ -133,9 +133,6 @@ const RestaurantDashboard: React.FC = () => {
     }
   };
 
-  // --- DELETE LOGIC ---
-
-  // 1. Trigger the Attention Modal
   const confirmDelete = (restaurant: AdminRestaurant) => {
     setModalConfig({
       type: "attention",
@@ -148,7 +145,6 @@ const RestaurantDashboard: React.FC = () => {
     });
   };
 
-  // 2. Perform the actual API call
   const performDelete = async (restaurant: AdminRestaurant) => {
     // Close the attention modal first (optional, or keep it open with loading state if needed)
     closeModal();
@@ -219,7 +215,6 @@ const RestaurantDashboard: React.FC = () => {
     }
   };
 
-  // --- EDIT LOGIC ---
 
   const handleEditClick = (rest: AdminRestaurant) => {
     setEditingRest(rest);
@@ -313,8 +308,8 @@ const RestaurantDashboard: React.FC = () => {
       );
 
       if (response.ok) {
-        setShowEditModal(false); // Close edit form first
-        fetchRestaurants(); // Refresh list
+        setShowEditModal(false);
+        fetchRestaurants();
 
         setModalConfig({
           type: "success",
@@ -356,7 +351,6 @@ const RestaurantDashboard: React.FC = () => {
     return getTimeForInput(isoString);
   };
 
-  // --- Render Helpers ---
 
   const renderResultModal = () => {
     if (!modalConfig.type) return null;
@@ -408,7 +402,16 @@ const RestaurantDashboard: React.FC = () => {
     );
   }
 
-  if (!user || !user.isAdmin) return null;
+  if (!user || !user.isAdmin) {
+    return (
+      <AttentionModal
+        title="Authorization Required"
+        content="You do not have permission to view this page. Restaurant management features are reserved for administrators only."
+        button="Return to Home"
+        path="/"
+      />
+    );
+  }
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
