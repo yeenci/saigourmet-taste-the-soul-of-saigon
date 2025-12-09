@@ -5,27 +5,26 @@ import Footer from "../components/Footer";
 import type { Restaurant } from "../lib/types";
 import { fetchRestaurantsData } from "../lib/utils";
 import { CATEGORIES } from "../lib/constants";
+import { useAuth } from "../context/AuthContext";
 
 const CategoryPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // This is now expected to be the CategoryID (e.g., "8")
+  const { user } = useAuth();
+
+  const { id } = useParams<{ id: string }>();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterDistrict, setFilterDistrict] = useState("All");
 
-  // 1. Resolve the Category Name from the URL ID
-  // We use useMemo so this doesn't recalculate on every render
   const currentCategory = useMemo(() => {
     if (!id) return null;
 
-    // Try to find by ID first (e.g., id="8" -> found "Event")
     const foundById = CATEGORIES.find((c) => c.categoryId.toString() === id);
     if (foundById) return foundById;
 
-    // Fallback: If id isn't a number or not found, maybe the URL is actually a name (legacy support)
     const foundByName = CATEGORIES.find(
       (c) => c.name.toLowerCase() === id.toLowerCase()
     );
-    return foundByName || { name: id, image: "", categoryId: 0, icon: "" }; // Fallback object
+    return foundByName || { name: id, image: "", categoryId: 0, icon: "" };
   }, [id]);
 
   const categoryName = currentCategory?.name;
@@ -216,16 +215,48 @@ const CategoryPage: React.FC = () => {
                     </p>
 
                     <div className="d-grid">
-                      <Link
-                        to={`/booking/${
-                          restaurant.restaurantId
-                        }?restaurant_name=${encodeURIComponent(
-                          restaurant.name
-                        )}`}
-                        className="btn btn-outline-dark fw-bold rounded-pill"
-                      >
-                        Book Table
-                      </Link>
+                      {user?.isAdmin ? (
+                        <button
+                          className="btn btn-secondary w-100 rounded-pill fw-bold"
+                          disabled
+                          style={{
+                            cursor: "not-allowed",
+                            opacity: 0.7,
+                            backgroundColor: "#e9ecef",
+                            color: "#6c757d",
+                            borderColor: "#dee2e6",
+                          }}
+                          title="Administrators cannot make bookings"
+                        >
+                          <i className="fa fa-ban me-2"></i>
+                          View Only
+                        </button>
+                      ) : (
+                        <Link
+                          to={`/booking/${
+                            restaurant.restaurantId
+                          }?restaurant_name=${encodeURIComponent(
+                            restaurant.name
+                          )}`}
+                          className="btn btn-outline-dark w-100 rounded-pill fw-bold"
+                          style={{
+                            borderColor: "#b2744c",
+                            color: "#b2744c",
+                            transition: "all 0.3s ease",
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.backgroundColor = "#b2744c";
+                            e.currentTarget.style.color = "white";
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.backgroundColor =
+                              "transparent";
+                            e.currentTarget.style.color = "#b2744c";
+                          }}
+                        >
+                          Book Table
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>
