@@ -27,14 +27,15 @@ interface ModalConfig {
 }
 
 const BookingForm: React.FC = () => {
+  const { user, token } = useAuth();
+
   const [searchParams] = useSearchParams();
   const { restaurantId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, token } = useAuth();
 
   const [loading, setLoading] = useState(false);
-  
+
   // Specific state for the Login Interception Modal
   const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -247,7 +248,7 @@ const BookingForm: React.FC = () => {
       // --- CASE: Success ---
       if (response.ok || response.status === 200 || response.status === 201) {
         sessionStorage.removeItem("bookingFormDraft");
-        
+
         setModalConfig({
           type: "success",
           title: "Booking Confirmed!",
@@ -265,7 +266,9 @@ const BookingForm: React.FC = () => {
         setModalConfig({
           type: "error",
           title: "Booking Failed",
-          content: data.detail || "We couldn't process your reservation. Please try again.",
+          content:
+            data.detail ||
+            "We couldn't process your reservation. Please try again.",
           button: "Try Again",
           onConfirm: closeModal, // Close modal to let user fix form
           secondaryButton: "Cancel & Exit",
@@ -278,7 +281,8 @@ const BookingForm: React.FC = () => {
       setModalConfig({
         type: "error",
         title: "Connection Error",
-        content: "A network error occurred. Please check your connection and try again.",
+        content:
+          "A network error occurred. Please check your connection and try again.",
         button: "Try Again",
         onConfirm: closeModal, // Close modal to let user retry
         secondaryButton: "Back to Home",
@@ -289,7 +293,16 @@ const BookingForm: React.FC = () => {
     }
   };
 
-  // --- RENDER MODALS ---
+  if (user && user.isAdmin) {
+    return (
+      <AttentionModal
+        title="Administrator Access"
+        content="Administrator accounts are restricted from creating personal reservations. Please log in with a customer account to continue."
+        button="Return to Home"
+        path="/"
+      />
+    );
+  }
 
   if (showLoginModal) {
     return (

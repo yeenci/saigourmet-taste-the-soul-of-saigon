@@ -49,16 +49,12 @@ const BookingHistory: React.FC = () => {
 
   // Brand color constant
   const brandColor = "#b2744c";
-
-  // Check Auth
+  
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isLoading) {
       navigate("/login");
     }
-    if (user?.isAdmin) {
-      navigate("/");
-    }
-  }, [isLoading, user, navigate]);
+  }, [isLoading, navigate]);
 
   // Fetch Data
   useEffect(() => {
@@ -433,6 +429,30 @@ const BookingHistory: React.FC = () => {
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <AttentionModal
+        title="Login Required"
+        content="Please log in to view your booking history and manage your reservations."
+        button="Login Now"
+        path="/login"
+        secondaryButton="Home"
+        secondaryPath="/"
+      />
+    );
+  }
+
+  if (user.isAdmin) {
+    return (
+      <AttentionModal
+        title="Customer Feature Only"
+        content="Administrators do not have personal booking histories. Please use the Dashboard to manage global reservations."
+        button="Return to Home"
+        path="/"
+      />
     );
   }
 

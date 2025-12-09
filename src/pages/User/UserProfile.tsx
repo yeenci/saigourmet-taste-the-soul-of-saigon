@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useAuth } from "../../context/AuthContext";
 import { apiRequest } from "../../lib/utils";
 import SuccessModal from "../../components/modals/SuccessModal";
 import ErrorModal from "../../components/modals/ErrorModal";
+import AttentionModal from "../../components/modals/AttentionModal";
 
 const UserProfile: React.FC = () => {
-  const navigate = useNavigate();
   const { user, token, logout, isLoading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
@@ -30,9 +29,7 @@ const UserProfile: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      navigate("/login");
-    } else if (user) {
+    if (user) {
       const savedData = sessionStorage.getItem("userFormData");
       if (savedData) {
         setFormData(JSON.parse(savedData));
@@ -45,7 +42,7 @@ const UserProfile: React.FC = () => {
         });
       }
     }
-  }, [user, isLoading, navigate]);
+  }, [user]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,14 +63,18 @@ const UserProfile: React.FC = () => {
 
       if (!verifyRes.ok) {
         // If login fails, the password is WRONG
-        setErrorMessage("Incorrect password. Please enter your current password to save changes.");
+        setErrorMessage(
+          "Incorrect password. Please enter your current password to save changes."
+        );
         setShowErrorModal(true);
         setSaveLoading(false);
         return; // STOP execution here
       }
     } catch (err) {
       console.error(err);
-      setErrorMessage("Could not verify identity. Please check your connection.");
+      setErrorMessage(
+        "Could not verify identity. Please check your connection."
+      );
       setShowErrorModal(true);
       setSaveLoading(false);
       return;
@@ -91,9 +92,9 @@ const UserProfile: React.FC = () => {
           email: formData.email,
           phone_number: formData.phone_number,
           address: formData.address,
-          // We send the password back to the server to satisfy schema, 
+          // We send the password back to the server to satisfy schema,
           // or to update it (since it's the same as current, it won't change anything)
-          password: formData.password, 
+          password: formData.password,
         }),
       });
 
@@ -122,7 +123,7 @@ const UserProfile: React.FC = () => {
     return user?.email ? user.email.charAt(0).toUpperCase() : "U";
   };
 
-  if (isLoading || !user)
+  if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="spinner-border text-secondary" role="status">
@@ -130,6 +131,20 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    return (
+      <AttentionModal
+        title="Login Required"
+        content="Please log in to view your profile, manage your account settings, and access your booking history."
+        button="Login Now"
+        path="/login"
+        secondaryButton="Home"
+        secondaryPath="/"
+      />
+    );
+  }
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-column">
@@ -168,7 +183,9 @@ const UserProfile: React.FC = () => {
                 <h6 className="fw-bold mb-1 text-dark text-truncate">
                   {user.email}
                 </h6>
-                <p className="text-muted small mb-4">{user.isAdmin ? `Admin` : `Member`}</p>
+                <p className="text-muted small mb-4">
+                  {user.isAdmin ? `Admin` : `Member`}
+                </p>
 
                 <div className="d-grid gap-2 text-start">
                   <button className="btn btn-light fw-bold text-dark d-flex align-items-center justify-content-between active">
@@ -297,7 +314,8 @@ const UserProfile: React.FC = () => {
                             <i className="fa fa-lock me-2"></i>Security Check
                           </label>
                           <p className="small text-muted mb-2">
-                            Please enter your current password to confirm these changes.
+                            Please enter your current password to confirm these
+                            changes.
                           </p>
                           <input
                             type="password"
