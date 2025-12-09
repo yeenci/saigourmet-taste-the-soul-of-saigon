@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { apiRequest } from "../../lib/utils";
@@ -38,7 +38,6 @@ interface ModalConfig {
 
 const RestaurantDashboard: React.FC = () => {
   const { token, user, isLoading: authLoading } = useAuth();
-  const navigate = useNavigate();
 
   const [restaurants, setRestaurants] = useState<AdminRestaurant[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
@@ -70,10 +69,6 @@ const RestaurantDashboard: React.FC = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
-      navigate("/");
-      return;
-    }
     fetchRestaurants();
   }, [user, token, authLoading]);
 
@@ -215,7 +210,6 @@ const RestaurantDashboard: React.FC = () => {
     }
   };
 
-
   const handleEditClick = (rest: AdminRestaurant) => {
     setEditingRest(rest);
 
@@ -351,7 +345,6 @@ const RestaurantDashboard: React.FC = () => {
     return getTimeForInput(isoString);
   };
 
-
   const renderResultModal = () => {
     if (!modalConfig.type) return null;
 
@@ -402,7 +395,19 @@ const RestaurantDashboard: React.FC = () => {
     );
   }
 
-  if (!user || !user.isAdmin) {
+  if (!user) {
+    return (
+      <AttentionModal
+        title="Authentication Needed"
+        content="Access to the restaurant management dashboard is restricted. Please log in to verify your administrative permissions."
+        button="Login Now!"
+        path="/login"
+        secondaryButton="Cancel"
+        secondaryPath="/"
+      />
+    );
+  }
+  if (!user.isAdmin) {
     return (
       <AttentionModal
         title="Authorization Required"

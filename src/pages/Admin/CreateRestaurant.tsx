@@ -44,10 +44,22 @@ const CreateRestaurant: React.FC = () => {
     selectedCategories: [] as number[],
   });
 
-  if (user && !user.isAdmin) {
+  if (!user) {
     return (
       <AttentionModal
-        title="Restricted Area"
+        title="Authentication Needed"
+        content="Creating a restaurant is a restricted action. Please log in to verify your identity and permissions."
+        button="Login Now!"
+        path="/login"
+        secondaryButton="Cancel"
+        secondaryPath="/"
+      />
+    );
+  }
+  if (!user.isAdmin) {
+    return (
+      <AttentionModal
+        title="Authorization Required"
         content="We're sorry, but only administrators are allowed to add new restaurants. Please return to the home page to continue browsing."
         button="Return to Home"
         path="/"

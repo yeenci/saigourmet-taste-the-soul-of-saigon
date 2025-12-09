@@ -23,12 +23,15 @@ const RestaurantBookings: React.FC = () => {
 
   // Modal State for details
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  
+
   // State for Processing
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   // State for Action Modals
-  const [confirmAction, setConfirmAction] = useState<{ id: string; action: "accept" | "reject" } | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{
+    id: string;
+    action: "accept" | "reject";
+  } | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -47,9 +50,6 @@ const RestaurantBookings: React.FC = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user || !user.isAdmin) {
-      navigate("/");
-    }
   }, [user, authLoading, navigate]);
 
   // Fetch Restaurant Name
@@ -73,7 +73,8 @@ const RestaurantBookings: React.FC = () => {
 
       let targetStatus: number | null = null;
       if (filterStatus === "pending") targetStatus = -1;
-      if (filterStatus === "confirmed" || filterStatus === "accepted") targetStatus = 1;
+      if (filterStatus === "confirmed" || filterStatus === "accepted")
+        targetStatus = 1;
       if (filterStatus === "rejected") targetStatus = 0;
 
       if (targetStatus !== null) {
@@ -118,6 +119,28 @@ const RestaurantBookings: React.FC = () => {
     }
   }, [restaurantId, token, filterStatus, authLoading, user]);
 
+  if (!user) {
+    <AttentionModal
+      title="Login Required"
+      content="Please log in to access the reservation management system. This feature is restricted to authorized administrators."
+      button="Login Now"
+      path="/login"
+      secondaryButton="Cancel"
+      secondaryPath="/"
+    />;
+  }
+
+  if (!user?.isAdmin) {
+    return (
+      <AttentionModal
+        title="Authorization Required"
+        content="You are not authorized to access this page. Viewing and modifying bookings is an administrative feature only."
+        button="Return to Home"
+        path="/"
+      />
+    );
+  }
+
   // 1. User clicks Accept/Reject -> Opens AttentionModal
   const promptAction = (
     bookingId: string,
@@ -137,22 +160,23 @@ const RestaurantBookings: React.FC = () => {
     setConfirmAction(null); // Close confirmation modal
 
     try {
-      const response = await apiRequest(
-        `/admin/booking/${id}/${action}`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await apiRequest(`/admin/booking/${id}/${action}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.ok) {
         // Close detail modal if it's the one being modified
         if (selectedBooking?.booking_id === id) setSelectedBooking(null);
-        
+
         // Refresh list
         await fetchBookings();
-        
+
         // Show Success Modal
-        setSuccessMessage(`Booking has been ${action === "accept" ? "accepted" : "rejected"} successfully.`);
+        setSuccessMessage(
+          `Booking has been ${
+            action === "accept" ? "accepted" : "rejected"
+          } successfully.`
+        );
       } else {
         const err = await response.json();
         setErrorMessage(err.detail || `Failed to ${action} booking.`);
@@ -524,12 +548,14 @@ const RestaurantBookings: React.FC = () => {
       {/* --- CONFIRM ACTION MODAL --- */}
       {confirmAction && (
         <AttentionModal
-          title={`Confirm ${confirmAction.action === "accept" ? "Acceptance" : "Rejection"}`}
+          title={`Confirm ${
+            confirmAction.action === "accept" ? "Acceptance" : "Rejection"
+          }`}
           content={`Are you sure you want to ${confirmAction.action} this booking?`}
           button={`Yes, ${confirmAction.action}`}
           onConfirm={executeAction}
           secondaryButton="Cancel"
-          onCancel={() => setConfirmAction(null)} 
+          onCancel={() => setConfirmAction(null)}
         />
       )}
 
