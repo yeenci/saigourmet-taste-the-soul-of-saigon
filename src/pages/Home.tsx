@@ -80,17 +80,17 @@ const Home: React.FC = () => {
           <div className="row text-center g-4">
             <div className="col-md-3 stat-card">
               <i className="fa fa-cutlery stat-icon fs-1 text-primary mb-3"></i>
-              <h3 className="fw-bold display-6 text-dark">500+</h3>
+              <h3 className="fw-bold display-6 text-dark">100+</h3>
               <p className="text-muted mb-0 fw-bold text-uppercase small">Restaurants</p>
             </div>
             <div className="col-md-3 stat-card">
               <i className="fa fa-users stat-icon fs-1 text-success mb-3"></i>
-              <h3 className="fw-bold display-6 text-dark">10k+</h3>
+              <h3 className="fw-bold display-6 text-dark">500+</h3>
               <p className="text-muted mb-0 fw-bold text-uppercase small">Happy Diners</p>
             </div>
             <div className="col-md-3 stat-card">
               <i className="fa fa-star stat-icon fs-1 text-warning mb-3"></i>
-              <h3 className="fw-bold display-6 text-dark">4.9</h3>
+              <h3 className="fw-bold display-6 text-dark">4.8</h3>
               <p className="text-muted mb-0 fw-bold text-uppercase small">Average Rating</p>
             </div>
             <div className="col-md-3 stat-card">

@@ -109,13 +109,13 @@ const About: React.FC = () => {
         <div className="container">
           <div className="row text-center text-white g-4">
             <div className="col-md-3">
-              <h2 className="display-4 fw-bold font-playfair">500+</h2>
+              <h2 className="display-4 fw-bold font-playfair">100+</h2>
               <p className="text-uppercase ls-1 opacity-75">
                 Partner Restaurants
               </p>
             </div>
             <div className="col-md-3">
-              <h2 className="display-4 fw-bold font-playfair">10k+</h2>
+              <h2 className="display-4 fw-bold font-playfair">500+</h2>
               <p className="text-uppercase ls-1 opacity-75">Monthly Diners</p>
             </div>
             <div className="col-md-3">
@@ -125,7 +125,7 @@ const About: React.FC = () => {
               </p>
             </div>
             <div className="col-md-3">
-              <h2 className="display-4 fw-bold font-playfair">4.9</h2>
+              <h2 className="display-4 fw-bold font-playfair">4.8</h2>
               <p className="text-uppercase ls-1 opacity-75">App Store Rating</p>
             </div>
           </div>
