@@ -51,10 +51,10 @@ const BookingHistory: React.FC = () => {
   const brandColor = "#b2744c";
   
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !user) {
       navigate("/login");
     }
-  }, [isLoading, navigate]);
+  }, [isLoading, navigate, user]);
 
   // Fetch Data
   useEffect(() => {
