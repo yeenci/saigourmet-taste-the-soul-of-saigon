@@ -37,6 +37,11 @@ const Register: React.FC = () => {
       setError("Passwords do not match");
       return;
     }
+
+    if (formData.password.length < 8 || formData.confirmPassword.length < 8) {
+      setError("Password must be at least 8 characters")
+    }
+
     setLoading(true);
 
     // Map React state (camelCase) to API requirement (snake_case)

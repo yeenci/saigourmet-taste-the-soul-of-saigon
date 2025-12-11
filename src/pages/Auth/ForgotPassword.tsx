@@ -144,6 +144,11 @@ const ForgotPassword: React.FC = () => {
       return;
     }
 
+    if (newPassword.length < 8 || confirmPassword.length < 8) {
+      setMessage({ type: "error", text: "Password must be at least 8 characters." });
+      return;
+    }
+
     setLoading(true);
     setMessage({ type: "", text: "" });
 
