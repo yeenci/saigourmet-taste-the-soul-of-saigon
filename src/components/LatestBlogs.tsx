@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { Article } from "../lib/types";

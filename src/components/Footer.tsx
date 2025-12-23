@@ -12,7 +12,6 @@ const Footer: React.FC = () => {
         <div className="mb-4">
           <img src={logo} alt="SaiGourmet Logo" width="70" className="mb-2" />
           <h3 className="fw-bold font-playfair mb-1">SaiGourmet</h3>
-          {/* Changed text color for better visibility */}
           <p className="text-light opacity-75 small">
             Your gateway to the best dining experiences in Saigon.
           </p>
@@ -78,7 +77,6 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-top border-secondary pt-4 mt-4">
-          {/* Improved contrast for copyright text */}
           <p className="small text-light mb-0 opacity-75">
             &copy; {new Date().getFullYear()} <strong>SaiGourmet</strong>. All
             Rights Reserved.

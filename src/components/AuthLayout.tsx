@@ -15,7 +15,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 }) => {
   return (
     <div className="auth-container">
-      {/* Left Side: Brand/Image */}
+      {/* Left */}
       <div className="auth-image-side">
         <div className="auth-overlay"></div>
         <div className="auth-quote">
@@ -28,7 +28,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         </div>
       </div>
 
-      {/* Right Side: Form */}
+      {/* Right */}
       <div className="auth-form-side">
         <style>{`
         .custom-link:hover {

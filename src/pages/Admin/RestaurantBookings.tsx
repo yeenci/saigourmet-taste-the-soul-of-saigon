@@ -141,7 +141,7 @@ const RestaurantBookings: React.FC = () => {
     );
   }
 
-  // 1. User clicks Accept/Reject -> Opens AttentionModal
+  // Accept/Reject -> Opens AttentionModal
   const promptAction = (
     bookingId: string,
     action: "accept" | "reject",
@@ -151,13 +151,13 @@ const RestaurantBookings: React.FC = () => {
     setConfirmAction({ id: bookingId, action });
   };
 
-  // 2. User confirms in AttentionModal -> Executes API
+  // AttentionModal -> Executes API
   const executeAction = async () => {
     if (!confirmAction) return;
     const { id, action } = confirmAction;
 
     setProcessingId(id);
-    setConfirmAction(null); // Close confirmation modal
+    setConfirmAction(null);
 
     try {
       const response = await apiRequest(`/admin/booking/${id}/${action}`, {
@@ -214,7 +214,6 @@ const RestaurantBookings: React.FC = () => {
     <div className="d-flex flex-column min-vh-100 bg-light">
       <Navbar />
 
-      {/* --- HEADER --- */}
       <div
         className="position-relative d-flex align-items-center"
         style={{
@@ -260,7 +259,6 @@ const RestaurantBookings: React.FC = () => {
         style={{ marginTop: "-80px", marginBottom: "60px" }}
       >
         <div className="card border-0 shadow-lg overflow-hidden h-100">
-          {/* --- TABS --- */}
           <div className="card-header bg-white p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
               <h4 className="fw-bold font-playfair mb-1">Request List</h4>
@@ -297,7 +295,6 @@ const RestaurantBookings: React.FC = () => {
             </ul>
           </div>
 
-          {/* --- LIST BODY --- */}
           <div className="card-body p-0 bg-light">
             {loading ? (
               <div className="text-center py-5">
@@ -436,7 +433,6 @@ const RestaurantBookings: React.FC = () => {
         </div>
       </div>
 
-      {/* --- DETAIL MODAL --- */}
       {selectedBooking && (
         <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
@@ -545,7 +541,6 @@ const RestaurantBookings: React.FC = () => {
         </div>
       )}
 
-      {/* --- CONFIRM ACTION MODAL --- */}
       {confirmAction && (
         <AttentionModal
           title={`Confirm ${
@@ -559,7 +554,6 @@ const RestaurantBookings: React.FC = () => {
         />
       )}
 
-      {/* --- SUCCESS MODAL --- */}
       {successMessage && (
         <SuccessModal
           title="Success"
@@ -569,7 +563,6 @@ const RestaurantBookings: React.FC = () => {
         />
       )}
 
-      {/* --- ERROR MODAL --- */}
       {errorMessage && (
         <ErrorModal
           title="Error"

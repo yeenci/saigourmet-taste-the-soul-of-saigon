@@ -140,7 +140,7 @@ const CreateRestaurant: React.FC = () => {
       name: formData.name,
       address: formData.address,
       district_id: Number(formData.district_id),
-      description: "", // Sending empty string as required by schema
+      description: "",
       image_url: formData.image_url,
       categories: formData.selectedCategories,
       openTime: formatToIso(formData.openTime),

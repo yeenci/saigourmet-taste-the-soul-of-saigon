@@ -77,7 +77,6 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar navbar-expand-lg sticky-top px-4 navbar-custom position-sticky">
       <div className="container-fluid">
-        {/* --- BRAND --- */}
         <Link
           className="navbar-brand fw-bold d-flex align-items-center text-white"
           to="/"
@@ -101,7 +100,6 @@ const Navbar: React.FC = () => {
           </span>
         </Link>
 
-        {/* --- TOGGLE BUTTON --- */}
         <button
           ref={buttonRef}
           className="navbar-toggler border-0 text-white"
@@ -117,7 +115,6 @@ const Navbar: React.FC = () => {
           )}
         </button>
 
-        {/* --- DESKTOP MENU --- */}
         <div className="collapse navbar-collapse d-none d-lg-flex justify-content-between">
           <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
             {["/", "/about", "/categories", "/restaurants/all", "/blogs"].map(
@@ -145,7 +142,6 @@ const Navbar: React.FC = () => {
 
           <div className="d-flex gap-3 align-items-center position-relative">
             {user ? (
-              /* --- LOGGED IN: AVATAR & ENHANCED DROPDOWN --- */
               <>
                 <div
                   ref={avatarRef}
@@ -172,7 +168,6 @@ const Navbar: React.FC = () => {
                   {getUserInitial()}
                 </div>
 
-                {/* --- ENHANCED DESKTOP POPUP --- */}
                 {showUserMenu && (
                   <div
                     ref={userMenuRef}
@@ -302,7 +297,6 @@ const Navbar: React.FC = () => {
                 )}
               </>
             ) : (
-              /* --- LOGGED OUT BUTTONS --- */
               <>
                 <Link
                   to="/login"
@@ -323,7 +317,6 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* --- MOBILE MENU (Enhanced) --- */}
       <div
         ref={menuRef}
         className={`d-lg-none position-fixed end-0 me-3 mt-2 rounded-4 shadow-lg bg-white overflow-hidden ${
@@ -337,7 +330,6 @@ const Navbar: React.FC = () => {
           border: "1px solid rgba(0,0,0,0.05)",
         }}
       >
-        {/* Mobile Header (User Info) */}
         {user ? (
           <div
             className="p-3 text-white"
