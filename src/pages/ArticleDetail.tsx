@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { fetchArticlesData } from "../lib/utils";
 
 // Helper function to calculate read time
 const calculateReadTime = (content: string): string => {
@@ -20,90 +21,74 @@ const ArticleDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchArticleData = async () => {
+    const loadArticle = async () => {
       setLoading(true);
 
-      // 1. Try to find the article in Session Storage first
-      const cachedData = sessionStorage.getItem("articlesData");
-      if (cachedData) {
-        try {
-          const parsedData = JSON.parse(cachedData);
-          if (Array.isArray(parsedData)) {
-            const foundArticle = parsedData.find(
-              (item: any) =>
-                String(item.articleId) === String(id) ||
-                String(item.id) === String(id)
-            );
+      // Use the mocked fetch function instead of direct fetch
+      const allArticles = await fetchArticlesData();
 
-            if (foundArticle) {
-              const readTime =
-                foundArticle.readTime ||
-                calculateReadTime(foundArticle.content);
-              setArticle({ ...foundArticle, readTime });
-              setLoading(false);
-              return;
-            }
-          }
-        } catch (e) {
-          console.error("Error parsing cache:", e);
+      if (allArticles && Array.isArray(allArticles)) {
+        const foundItem = allArticles.find(
+          (item: any) =>
+            String(item.id) === String(id) ||
+            String(item.articleId) === String(id)
+        );
+
+        if (foundItem) {
+          // Calculate read time if it's missing from the mock data
+          const readTime =
+            foundItem.readTime || calculateReadTime(foundItem.content || "");
+
+          setArticle({
+            articleId: foundItem.articleId,
+            title: foundItem.title,
+            image: foundItem.image,
+            content: foundItem.content,
+            date: foundItem.date,
+            category: foundItem.category,
+            readTime: readTime,
+          });
+        } else {
+          setArticle(null);
         }
+      } else {
+        setArticle(null);
       }
 
-      // 2. API Fallback
-      const apiUrl = import.meta.env.VITE_API_URL || "/api";
-      try {
-        const response = await fetch(`${apiUrl}/article/`);
-        const result = await response.json();
-        const dataArray = Array.isArray(result) ? result : result.data;
-
-        if (Array.isArray(dataArray)) {
-          const foundItem = dataArray.find(
-            (item: any) =>
-              String(item.id) === String(id) ||
-              String(item.articleId) === String(id)
-          );
-
-          if (foundItem) {
-            setArticle({
-              articleId: foundItem.id || foundItem.articleId,
-              title: foundItem.title,
-              image: foundItem.image,
-              content: foundItem.content,
-              date: foundItem.date,
-              category: foundItem.category,
-              readTime: calculateReadTime(foundItem.content),
-            });
-          } else {
-            setArticle(null);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching article:", error);
-      } finally {
-        setLoading(false);
-      }
+      setLoading(false);
     };
 
-    if (id) fetchArticleData();
+    if (id) loadArticle();
   }, [id]);
 
   if (loading)
     return (
-      <div className="text-center mt-5">
-        <div className="spinner-border text-warning"></div>
+      <div className="d-flex flex-column min-vh-100 bg-white">
+        <Navbar />
+        <div className="flex-grow-1 d-flex justify-content-center align-items-center">
+          <div className="spinner-border text-warning"></div>
+        </div>
+        <Footer />
       </div>
     );
 
   if (!article) {
     return (
-      <div className="text-center mt-5 container">
-        <h2>Article Not Found</h2>
-        <button
-          className="btn btn-primary mt-3"
-          onClick={() => navigate("/blogs")}
-        >
-          Back to Blogs
-        </button>
+      <div className="d-flex flex-column min-vh-100 bg-white">
+        <Navbar />
+        <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center">
+          <h2 className="fw-bold mb-3">Article Not Found</h2>
+          <p className="text-muted mb-4">
+            The story you are looking for does not exist.
+          </p>
+          <button
+            className="btn btn-outline-dark rounded-pill px-4 fw-bold"
+            onClick={() => navigate("/blogs")}
+          >
+            Back to Blogs
+          </button>
+        </div>
+        <Footer />
       </div>
     );
   }

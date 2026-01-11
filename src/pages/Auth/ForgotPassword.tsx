@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import AuthLayout from "../../components/AuthLayout";
 import { apiRequest } from "../../lib/utils";
 import SuccessModal from "../../components/modals/SuccessModal";
+import AttentionModal from "../../components/modals/AttentionModal";
 
 type Step = "REQUEST" | "VERIFY" | "RESET";
 
@@ -26,8 +27,9 @@ const ForgotPassword: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Success Modal State
+  // Modal States
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showOtpHint, setShowOtpHint] = useState(false);
 
   // Style for eye icon
   const eyeIconStyle: React.CSSProperties = {
@@ -78,6 +80,10 @@ const ForgotPassword: React.FC = () => {
         if (sid) {
           setSessionId(sid);
           setStep("VERIFY");
+
+          // Show the Demo Hint Modal
+          setShowOtpHint(true);
+
           setMessage({
             type: "success",
             text: data.message || "OTP code sent to your email.",
@@ -145,7 +151,10 @@ const ForgotPassword: React.FC = () => {
     }
 
     if (newPassword.length < 8 || confirmPassword.length < 8) {
-      setMessage({ type: "error", text: "Password must be at least 8 characters." });
+      setMessage({
+        type: "error",
+        text: "Password must be at least 8 characters.",
+      });
       return;
     }
 
@@ -182,6 +191,35 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <>
+      {showOtpHint && (
+        <AttentionModal
+          title="Backend Offline"
+          content={
+            <div className="text-center">
+              <p className="mb-2">
+                Since the backend is offline, we cannot send a real email.
+              </p>
+              <p className="mb-3 text-muted">
+                Please use this Fake OTP code to proceed:
+              </p>
+              <div className="bg-light p-3 rounded mb-2 border border-warning">
+                <h2
+                  className="text-primary m-0 fw-bold"
+                  style={{ letterSpacing: "5px" }}
+                >
+                  123456
+                </h2>
+              </div>
+            </div>
+          }
+          button="Auto-Fill & Verify"
+          onConfirm={() => {
+            setOtp("123456");
+            setShowOtpHint(false);
+          }}
+        />
+      )}
+
       <AuthLayout
         title="Account Recovery"
         subtitle="Follow the steps to reset your password."

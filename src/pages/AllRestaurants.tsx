@@ -213,14 +213,14 @@ const AllRestaurants: React.FC = () => {
                           <img
                             src={
                               restaurant.picture ||
-                              "https://via.placeholder.com/300"
+                              "https://placehold.co/600x400?text=No+Image+Available"
                             }
                             alt={restaurant.name}
                             className="card-img-top"
                             style={{ height: "220px", objectFit: "cover" }}
                             onError={(e) =>
                               (e.currentTarget.src =
-                                "https://via.placeholder.com/300")
+                                "https://placehold.co/600x400?text=No+Image+Available")
                             }
                           />
 

@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 type AttentionModalProps = {
   title: string;
   path?: string;
-  content: string;
+  content: React.ReactNode;
   button: string;
   onConfirm?: () => void;
   secondaryPath?: string;
   secondaryButton?: string;
-  onCancel?: () => void; // Added for state-based closing
+  onCancel?: () => void;
 };
 
 const AttentionModal: React.FC<AttentionModalProps> = ({
@@ -73,9 +73,9 @@ const AttentionModal: React.FC<AttentionModalProps> = ({
           ></i>
         </div>
         <h4 style={{ color: "#333", marginBottom: "0.5rem" }}>{title}</h4>
-        <p style={{ color: "#666", marginBottom: "1.5rem" }}>{content}</p>
-        
-        {/* Primary Button */}
+
+        <div style={{ color: "#666", marginBottom: "1.5rem" }}>{content}</div>
+
         <button
           className="btn-auth"
           onClick={handleClick}
@@ -84,8 +84,7 @@ const AttentionModal: React.FC<AttentionModalProps> = ({
           {button}
         </button>
 
-        {/* Secondary Button */}
-        {(secondaryButton && (secondaryPath || onCancel)) && (
+        {secondaryButton && (secondaryPath || onCancel) && (
           <div style={{ marginTop: "1rem" }}>
             <button
               onClick={handleSecondaryClick}

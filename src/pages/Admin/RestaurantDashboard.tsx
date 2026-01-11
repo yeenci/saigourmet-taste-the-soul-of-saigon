@@ -72,8 +72,6 @@ const RestaurantDashboard: React.FC = () => {
     fetchRestaurants();
   }, [user, token, authLoading]);
 
-  // --- Helper Functions ---
-
   const closeModal = () => {
     setModalConfig({ ...modalConfig, type: null });
   };

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import AuthLayout from "../../components/AuthLayout";
 import { apiRequest } from "../../lib/utils";
 import SuccessModal from "../../components/modals/SuccessModal";
+import AttentionModal from "../../components/modals/AttentionModal";
 
 const Register: React.FC = () => {
   const location = useLocation();
@@ -15,6 +15,11 @@ const Register: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  // Initialize state based on session storage to prevent reappearing on reload
+  const [showDemoModal, setShowDemoModal] = useState(() => {
+    return !sessionStorage.getItem("hasSeenDemoModal");
+  });
+
   const previousPath = location.state?.from;
 
   const [formData, setFormData] = useState({
@@ -24,6 +29,11 @@ const Register: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
+
+  const handleCloseDemoModal = () => {
+    sessionStorage.setItem("hasSeenDemoModal", "true");
+    setShowDemoModal(false);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,7 +49,8 @@ const Register: React.FC = () => {
     }
 
     if (formData.password.length < 8 || formData.confirmPassword.length < 8) {
-      setError("Password must be at least 8 characters")
+      setError("Password must be at least 8 characters");
+      return;
     }
 
     setLoading(true);
@@ -103,6 +114,36 @@ const Register: React.FC = () => {
 
   return (
     <>
+      {/* Demo Mode Notice */}
+      {showDemoModal && (
+        <AttentionModal
+          title="Backend Offline - Demo Mode"
+          content={
+            <div>
+              <p className="mb-3">
+                Registration is currently <strong>simulated</strong>.
+              </p>
+              <div
+                className="bg-light p-3 rounded border text-start"
+                style={{ fontSize: "0.9rem" }}
+              >
+                <ul className="mb-0 ps-3">
+                  <li className="mb-2">
+                    New accounts are saved to your browser's <strong>Local Storage</strong>.
+                  </li>
+                  <li>
+                    You can log in with your new credentials immediately after
+                    registration.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          }
+          button="Understood"
+          onConfirm={handleCloseDemoModal}
+        />
+      )}
+
       <AuthLayout title="Create Account" subtitle="Join us today.">
         {error && (
           <div className="alert alert-danger p-2 mb-3 small">{error}</div>
@@ -201,7 +242,7 @@ const Register: React.FC = () => {
         <SuccessModal
           title="Account Created!"
           path="/login"
-          content="Welcome! You're now signed in."
+          content="Your simulated account has been created! You can now use these credentials to log in."
           button="Go to Login"
           secondaryPath={previousPath}
           secondaryButton={

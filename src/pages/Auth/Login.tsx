@@ -6,6 +6,7 @@ import AuthLayout from "../../components/AuthLayout";
 import { apiRequest } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
 import SuccessModal from "../../components/modals/SuccessModal";
+import AttentionModal from "../../components/modals/AttentionModal";
 
 const Login: React.FC = () => {
   const location = useLocation();
@@ -16,30 +17,50 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  // Initialize state based on session storage to prevent reappearing on reload
+  const [showDemoModal, setShowDemoModal] = useState(() => {
+    return !sessionStorage.getItem("hasSeenDemoModal");
+  });
+
   const previousPath = location.state?.from;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCloseDemoModal = () => {
+    sessionStorage.setItem("hasSeenDemoModal", "true");
+    setShowDemoModal(false);
+  };
+
+  const handleShowCredentials = (e: React.MouseEvent) => {
     e.preventDefault();
+    setShowDemoModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Crucial: prevents page reload
     setError("");
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const params = new URLSearchParams();
-    params.append("username", formData.get("username") as string);
-    params.append("password", formData.get("password") as string);
+
+    // Safety checks for inputs
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
+
+    params.append("username", username || "");
+    params.append("password", password || "");
     params.append("grant_type", "password");
 
     try {
       const response = await apiRequest("/auth/login", {
         method: "POST",
-        body: params,
+        body: params.toString(),
       });
 
       let data: any = {};
       try {
         data = await response.json();
       } catch (parseError) {
-        // ignore
+        // ignore JSON errors
       }
 
       if (response.ok) {
@@ -47,7 +68,7 @@ const Login: React.FC = () => {
         setShowSuccessModal(true);
       } else {
         if (response.status === 401) {
-          setError("Invalid email or password. Please try again.");
+          setError("Invalid email or password.");
         } else {
           const msg =
             data.detail || "Login failed. Please check your credentials.";
@@ -77,13 +98,62 @@ const Login: React.FC = () => {
 
   return (
     <>
+      {/* Demo Credentials Modal */}
+      {showDemoModal && (
+        <AttentionModal
+          title="Backend Offline - Demo Mode"
+          content={
+            <div>
+              <p className="mb-3">
+                The server is currently offline. Please use these demo
+                credentials to test the features:
+              </p>
+              <div
+                className="bg-light p-3 rounded border text-start"
+                style={{ fontSize: "0.9rem" }}
+              >
+                <div className="mb-2">
+                  <strong>👮 Admin:</strong> <br />
+                  Email:{" "}
+                  <span className="text-primary">
+                    admin@saigourmet.com
+                  </span>{" "}
+                  <br />
+                  Pass: <code>password123</code>
+                </div>
+                <div>
+                  <strong>👤 User:</strong> <br />
+                  Email:{" "}
+                  <span className="text-primary">user@saigourmet.com</span>{" "}
+                  <br />
+                  Pass: <code>password123</code>
+                </div>
+              </div>
+            </div>
+          }
+          button="Got it!"
+          onConfirm={handleCloseDemoModal}
+        />
+      )}
+
       <AuthLayout
         title="Welcome Back"
         subtitle="Please enter your details to sign in."
       >
+        {/* Error Alert with "Show Credentials" link */}
         {error && (
-          <div className="alert alert-danger p-2 mb-3 small">{error}</div>
+          <div className="alert alert-danger p-2 mb-3 small d-flex justify-content-between align-items-center">
+            <span>{error}</span>
+            <button
+              onClick={handleShowCredentials}
+              className="btn btn-link btn-sm text-danger fw-bold text-decoration-none p-0 ms-2"
+              style={{ fontSize: "0.8rem" }}
+            >
+              See Credentials?
+            </button>
+          </div>
         )}
+
         <form onSubmit={handleSubmit}>
           <div className="modern-input-group">
             <i className="fa fa-envelope"></i>
